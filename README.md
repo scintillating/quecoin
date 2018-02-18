@@ -1,2 +1,2 @@
 # quecoin
-MIT Blueprint 2018
+MIT Bluepri 20V
