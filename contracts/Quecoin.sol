@@ -23,4 +23,5 @@ contract Quecoin is StandardToken {
     balances[msg.sender] = INITIAL_SUPPLY;
     Transfer(0x0, msg.sender, INITIAL_SUPPLY);
   }
+
 }

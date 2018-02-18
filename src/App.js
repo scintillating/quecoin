@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Link } from 'react-router'
 
 // UI Components
 import LoginButtonContainer from './user/ui/loginbutton/LoginButtonContainer'
 import LogoutButtonContainer from './user/ui/logoutbutton/LogoutButtonContainer'
+
+import QuestionApi from './util/QuestionApi';
 
 // Styles
 import './css/oswald.css'
@@ -42,7 +45,11 @@ $(document).ready(function() {
 
 class App extends Component {
   render() {
-    /* Define the nav and animations above */
+      const api = new QuestionApi();
+      console.log(this.props)
+      if (this.props.web3 != null) {
+          api.init(this.props.web3)
+      }
       const NavBar = () => (
         <div className="parent2">
           <Link to=""><div className="test1"><i className="fa fa-home fa-2x"></i></div></Link>
@@ -64,4 +71,10 @@ class App extends Component {
   }
 }
 
-export default App
+const mapStateToProps = (state, ownProps) => {
+  return {
+    web3: state.web3.web3Instance
+  }
+}
+
+export default connect(mapStateToProps, (dispatch) => { return {}; })(App);

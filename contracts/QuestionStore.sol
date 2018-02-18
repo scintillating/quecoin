@@ -1,10 +1,9 @@
 pragma solidity ^0.4.18;
 
-import "zeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "./Quecoin.sol";
 
 
-contract QuestionStore is Pausable {
+contract QuestionStore {
     uint private constant QUESTION_ANSWERING_PERIOD = 5 days;
 
     struct Question {
@@ -163,11 +162,15 @@ contract QuestionStore is Pausable {
         // return (question, desc, asker, created, votePool, questionPool, upvotesInVotePool, downvotesInVotePool, finalized);
     }
 
+    function getQuestionCount() external view returns (uint) {
+        return questions.length;
+    }
+
     function getVote(uint _questionId) external view returns (int) {
         return userToQuestionVote[msg.sender][_questionId];
     }
 
-    function changeQuecoinAddress(address _newAddress) public onlyOwner {
+    function changeQuecoinAddress(address _newAddress) private {
         quecoin = Quecoin(_newAddress);
     }
 
