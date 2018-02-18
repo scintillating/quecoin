@@ -12,23 +12,30 @@ contract QuestionStore is Pausable {
         string desc;
         address asker;
         uint created;
-        uint32 votePool;
-        uint32 questionPool;
-        uint32 totalUpvotes;
-        uint32 totalDownvotes;
+        uint votePool;
+        uint questionPool;
+        uint upvotePool;
+        uint downvotePool;
+        int voteScore;
         bool finalized;
     }
-
-    // User address -> questionId -> vote
-    mapping (address => mapping(uint => int32)) private userToQuestionVote;
-    mapping (uint => Answer[]) private answers;
-    mapping (uint => address[]) private questionUpvoters;
-    mapping (uint => address[]) private questionDownvoters;
 
     struct Answer {
         string answer;
         address author;
     }
+
+    event QuestionAsked(address asker, uint questionId);
+    event QuestionAnswered(address asker, address answerer, uint questionId, uint answerId);
+    event AcceptedAndFinalized(address asker, address answerer, uint questionId, uint answerId);
+    event FlaggedAndFinalized(address asker, address finalizer, uint questionId);
+    event Voted(address voter, uint questionId);
+
+    // User address -> questionId -> vote
+    mapping (address => mapping(uint => int)) private userToQuestionVote;
+    mapping (uint => Answer[]) private answers;
+    mapping (uint => address[]) private questionUpvoters;
+    mapping (uint => address[]) private questionDownvoters;
 
     Question[] private questions;
 
@@ -40,36 +47,51 @@ contract QuestionStore is Pausable {
 
     function askQuestion(string _question, string _description) external {
         // Initialize question with 0 vote and question pools
-        Question storage newQuestion = Question(_question, _description, msg.sender, now, 0, 0, 0);
+        Question memory newQuestion = Question(_question, _description, msg.sender, now, 0, 0, 0, 0, 0, false);
         _requireQuestionPoolPayment(newQuestion, _queAmount(10));
-        questions.push(newQuestion);
+        uint id = questions.push(newQuestion) - 1;
+        QuestionAsked(msg.sender, id);
     }
 
-    function questionDetails(string _questionId) view external returns (string question, string desc, address asker, uint created, uint32 votePool, uint32 questionPool, uint32 totalUpvotes, uint32 totalDownvotes, address[] upvoters, address[] downvoters, bool finalized){
-        Question storage question = questions[_questionId]
+    function answerQuestion(uint _questionId, string _answer) external {
+        _requireQuestionPoolPayment(questions[_questionId], _queAmount(5));
+        uint id = answers[_questionId].push(Answer(_answer, msg.sender)) - 1;
+        QuestionAnswered(questions[_questionId].asker, msg.sender, _questionId, id);
+    }
 
-        question = question.question;
-        desc = question.desc;
-        asker = question.asker;
-        created = question.created;
-        votePool = question.votePool;
-        questionPool = question.questionPool;
-        totalUpvotes = question.totalUpvotes;
-        totalDownvotes = question.totalDownvotes;
-        upvoters = question.upvoters;
-        downvoters = question.downvoters;
-        finalized = question.finalized;
+    function questionDetails(uint _questionId) view external
+    returns (
+        string question,
+        string desc,
+        address asker,
+        uint created,
+        uint votePool,
+        uint questionPool,
+        uint upvotePool,
+        uint downvotePool,
+        bool finalized)
+    {
+        Question storage q = questions[_questionId];
 
-        return
+        question = q.question;
+        desc = q.desc;
+        asker = q.asker;
+        created = q.created;
+        votePool = q.votePool;
+        questionPool = q.questionPool;
+        upvotePool = q.upvotePool;
+        downvotePool = q.downvotePool;
+        finalized = q.finalized;
+        // return (question, desc, asker, created, votePool, questionPool, upvotePool, downvotePool, finalized);
     }
 
     // Called by asker
-    function finalizeWithAnswer(uint _questionId, uint _answerId) external {
+    function acceptAnswerAndFinalize(uint _questionId, uint _answerId) external {
         Question storage q = questions[_questionId];
         require(q.asker == msg.sender); // Only asker can finalize question
         require(_isQuestionFinalizable(q));
         require(q.finalized == false);
-        require(_voteScore(q) >= 0);
+        require(q.voteScore >= 0); // Only for good questions
 
         // Quecoins sent to the final answerer
         Answer storage questionAnswer = answers[_questionId][_answerId];
@@ -81,57 +103,69 @@ contract QuestionStore is Pausable {
         uint coinsForAsker = q.questionPool / 4;
         require(quecoin.transferFrom(this, q.asker, coinsForAsker));
 
-        // Voting quecoin pool
-        if (_voteScore(q) > 0) {
-            // Upvoters get their money back and downvoters' money proportional
-            // the amount they put in
-            // TODO: Unbounded for loops are bad in solidity
-            for (uint i = 0; i < questionUpvoters[_questionId].length; i++) {
-                address upvoter = questionUpvoters[_questionId][i];
-                uint32 upvoteAmount = userToQuestionVote[upvoter][_questionId];
-                uint payout = (upvoteAmount / q.totalUpvotes) * q.votePool;
-                require(quecoin.transferFrom(this, upvoter, payout));
-            }
-        } else {
-            // Downvoters
+        // Upvoters get their money back and downvoters' money proportional
+        // the amount they put in
+        // TODO: Unbounded for loops are bad in solidity
+        for (uint i = 0; i < questionUpvoters[_questionId].length; i++) {
+            address upvoter = questionUpvoters[_questionId][i];
+            uint upvoteAmount = uint(userToQuestionVote[upvoter][_questionId]);
+            uint payout = (upvoteAmount / q.upvotePool) * q.votePool;
+            require(quecoin.transferFrom(this, upvoter, payout));
         }
 
-
         q.finalized = true;
+        AcceptedAndFinalized(q.asker, answerer, _questionId, _answerId);
     }
 
-    // Called by anyone
-    function finalizeFlagQuestion() external {
+    // Callable by anyone
+    function flagAndFinalize(uint _questionId) external {
+        Question storage q = questions[_questionId];
+        require(_isQuestionFinalizable(q));
+        require(q.finalized == false);
+        require(q.voteScore < 0);
 
+        // Question pool voided
+        require(quecoin.transferFrom(this, 0, q.questionPool));
+
+        // Voter pool sent to each downvoter
+        for (uint i = 0; i < questionDownvoters[_questionId].length; i++) {
+            address downvoter = questionDownvoters[_questionId][i];
+            // Downvotes are represented as negative, so flip to positive
+            uint downvoteAmount = uint(-1 * userToQuestionVote[downvoter][_questionId]);
+            uint payout = (downvoteAmount / q.downvotePool) * q.votePool;
+            require(quecoin.transferFrom(this, downvoter, payout));
+        }
+
+        q.finalized = true;
+        FlaggedAndFinalized(q.asker, msg.sender, _questionId);
+        // muy bein esteban
     }
 
     // 1 vote corresponds with 1 QUE
-    function vote(uint _questionId, int32 _vote) external {
+    function vote(uint _questionId, int _vote) external {
         require(userToQuestionVote[msg.sender][_questionId] == 0); // Never voted before
         require(_vote != 0); // No empty votes please
         Question storage q = questions[_questionId];
-        _requireVotePoolPayment(q, _queAmount(_vote));
+        uint queCost = uint(_vote > 0 ? _vote : -_vote);
+        _requireVotePoolPayment(q, queCost);
         userToQuestionVote[msg.sender][_questionId] += _vote;
         if (_vote > 0) {
             questionUpvoters[_questionId].push(msg.sender);
-            q.totalUpvotes += _vote;
+            q.upvotePool += queCost;
         } else {
             questionDownvoters[_questionId].push(msg.sender);
-            q.totalDownvotes -= _vote;
+            q.downvotePool += queCost;
         }
+        q.voteScore += _vote;
+        Voted(msg.sender, _questionId);
     }
 
-    function getVote() external view returns (int32) {
+    function getVote(uint _questionId) external view returns (int) {
         return userToQuestionVote[msg.sender][_questionId];
     }
 
     function changeQuecoinAddress(address _newAddress) public onlyOwner {
         quecoin = Quecoin(_newAddress);
-    }
-
-    function answerQuestion(uint _questionIndex, string _answer) {
-        _requireQuestionPoolPayment(questions[_questionIndex], _queAmount(5));
-        answers[_questionIndex].push(_answer);
     }
 
     function _requireQuestionPoolPayment(Question _question, uint _amount) private {
@@ -155,10 +189,6 @@ contract QuestionStore is Pausable {
     function _isQuestionFinalizable(Question _question) private view returns (bool) {
         // Only allow finalize five days after
         return _question.created <= now - QUESTION_ANSWERING_PERIOD;
-    }
-
-    function _voteScore(Question _question) private pure returns (int32) {
-        return _question.totalUpvotes - _question.totalDownvotes;
     }
 }
 
