@@ -48,7 +48,10 @@ class App extends Component {
       const api = new QuestionApi();
       console.log(this.props)
       if (this.props.web3 != null) {
-          api.init(this.props.web3)
+          (async () => {
+            await api.init(this.props.web3)
+            await api.getQuestions()
+          })();
       }
       const NavBar = () => (
         <div className="parent2">

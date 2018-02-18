@@ -4,7 +4,7 @@ import "./Quecoin.sol";
 
 
 contract QuestionStore {
-    uint private constant QUESTION_ANSWERING_PERIOD = 5 days;
+    uint private constant QUESTION_ANSWERING_PERIOD = 1 minute;
 
     struct Question {
         string question;
@@ -164,6 +164,15 @@ contract QuestionStore {
 
     function getQuestionCount() external view returns (uint) {
         return questions.length;
+    }
+
+    function getQuestionAnswerCount(uint _questionId) external view returns (uint) {
+        return answers[_questionId].length;
+    }
+
+    function getQuestionAnswer(uint _questionId, uint _answerId) external view returns (string, address) {
+        Answer storage answer = answers[_questionId][_answerId];
+        return (answer.answer, answer.author);
     }
 
     function getVote(uint _questionId) external view returns (int) {
