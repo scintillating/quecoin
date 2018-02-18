@@ -97,6 +97,15 @@ body {
 }
 
 html {
-  background:  url(https://i.imgur.com/hffM7u4.gif) no-repeat center center fixed;
+  /*ckground:  url(https://i.imgur.com/hffM7u4.gif) no-repeat center center fixed;*/
   background-size: cover;
+  color: white;
+}
+
+p{
+  color:white;
+}
+
+#toprow{
+  padding-top: 120px;
 }
