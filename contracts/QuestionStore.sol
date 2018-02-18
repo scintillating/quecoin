@@ -142,6 +142,7 @@ contract QuestionStore is Pausable {
         uint created,
         uint votePool,
         uint questionPool,
+        int voteScore,
         uint upvotePool,
         uint downvotePool,
         bool finalized)
@@ -154,6 +155,7 @@ contract QuestionStore is Pausable {
         created = q.created;
         votePool = q.votePool;
         questionPool = q.questionPool;
+        voteScore = q.voteScore;
         upvotePool = q.upvotePool;
         downvotePool = q.downvotePool;
         finalized = q.finalized;
