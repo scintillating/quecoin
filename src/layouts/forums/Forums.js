@@ -1,9 +1,13 @@
 import React, { Component } from 'react'
 
-class Dashboard extends Component {
-  constructor(props, { authData }) {
+class Forums extends Component {
+  constructor(props) {
     super(props)
-    authData = this.props
+    this.state == "NOT_LOADED";
+  }
+
+  componentDidMount() {
+
   }
 
   render() {
@@ -11,7 +15,7 @@ class Dashboard extends Component {
       <main className="container">
         <div className="pure-g">
           <div className="pure-u-1-1 jumbotron">
-            <h1>Dashboard</h1>
+            <h1>Forums</h1>
             <p>If you're seeing this page, you've logged in with your own smart contract successfully.</p>
           </div>
         </div>
@@ -20,4 +24,4 @@ class Dashboard extends Component {
   }
 }
 
-export default Dashboard
+export default Forums
