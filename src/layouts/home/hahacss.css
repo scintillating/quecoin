@@ -1,21 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Marketplace
-Explore
- @s-dylan-kim
- Sign out
- Watch 2
-  Star 0  Fork 0 scintillating/scintillate.me
- Code  Issues 0  Pull requests 0  Insights
-Branch: master Find file Copy pathscintillate.me/theme/bootstrap.css
-228ad23  on Dec 30, 2017
-@Pneumaticat Pneumaticat Readd bootstrap.css and morebootstrap.css files
-2 contributors @Pneumaticat @RektInPieces
-RawBlameHistory
-5998 lines (5996 sloc)  122 KB
 @import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic");
 
 html {
