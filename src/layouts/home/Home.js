@@ -14,15 +14,11 @@ class Home extends Component {
           <header className="jumbotron fadeInDown animated page-header" id="banner">
             <img src="https://i.imgur.com/vJwufW6.png" id="QueCoinLogo" className="fadeInDown animatedDelay"/>
             <p className="fadeInLeft animatedDelay text-warning">
-              <em>Go forth young padawan and ask/answer questions!</em>
-            </p>
-        </header>
-        <header className="jumbotron">
-          <div className="row">
-            <div className="col-6">
-
-            </div>
-          </div>
+              <em>Ask and answer intelligent questions with ease, while making bank.</em>
+            </p> <br></br>
+            <p>QueCoin incentivizes both the answerer, asker and the supporters when asking intelligent questions, using uncensorable and decentralized data storage, so no entity can interfere.</p> <br></br>
+            <p>For just a few QUE, you can submit questions to be answered, but keep in mind, these questions cost money and you get a return on your investment if the community believes that the question is worthwhile.</p>
+            <br></br><p>Furthermore, answerers beware, spam will not be tolerated by the community as you must stake QUE in order to earn QUE, creating a self-secure system handled by intelligent smart-contracts. </p>
         </header>
       </main>
       </main>
