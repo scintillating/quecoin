@@ -43,6 +43,7 @@ contract QuestionStore is Pausable {
     Quecoin private quecoin;
 
     function QuestionStore(address initialQuecoinAddress) public {
+        require(initialQuecoinAddress != 0x0);
         changeQuecoinAddress(initialQuecoinAddress);
     }
 
