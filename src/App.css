@@ -43,14 +43,14 @@ code {
   font-family: 'Oswald', 'Arial Narrow', sans-serif;
 }
 
-.navbar a {
-  color: #fff;
+.linkIsWhite a{
+  color: white;
 }
 
-.navbar a:active,
-.navbar a:focus,
-.navbar a:hover {
-  background: #233e5e;
+.linkIsWhite a:active,
+.linkIsWhite a:focus,
+.linkIsWhite a:hover {
+  color: white;
 }
 
 .navbar .pure-menu-heading {

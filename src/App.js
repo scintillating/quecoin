@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router'
-import { HiddenOnlyAuth, VisibleOnlyAuth } from './util/wrappers.js'
 
 // UI Components
 import LoginButtonContainer from './user/ui/loginbutton/LoginButtonContainer'
@@ -17,6 +16,7 @@ import $ from 'jquery'
 
 $(document).ready(function() {
 
+/* NavBar animations below: */
   var active1 = false;
   var active2 = false;
   var active3 = false;
@@ -42,34 +42,22 @@ $(document).ready(function() {
 
 class App extends Component {
   render() {
-      const OnlyGuestLinks = HiddenOnlyAuth(() =>
-        <span>
+    /* Define the nav and animations above */
+      const NavBar = () => (
         <div className="parent2">
-          <Link to="/home"><div className="test1"><i className="fa fa-home fa-2x"></i></div></Link>
+          <Link to=""><div className="test1"><i className="fa fa-home fa-2x"></i></div></Link>
           <div className="test2"><i className="fa fa-wpforms fa-2x"></i></div>
-          <div className="test3"><i className="fa fa-user fa-2x"></i></div>
-          <div className="test4"><i className="fa fa-file fa-2x"></i></div>
+          <div className="test3 linkIsWhite"><a href = "https://metamask.io/" target = "_blank"><i className="fa fa-user fa-2x"></i></a></div>
+          <div className="test4 linkIsWhite"><a href = "https://docs.google.com/document/d/1SUYIcKfctowjjmqOM4c3Bq4D337DjCJDVFs9w4ppKbg/edit" target = "_blank"><i className="fa fa-file fa-2x"></i></a></div>
           <div className="mask2"><i className="fa fa-home fa-3x"></i></div>
         </div>
-        </span>
-        )
+      )
 
-        const OnlyAuthLinks = VisibleOnlyAuth(
-          <div className="parent2">
-            <Link to="/home"><div className="test1"><i className="fa fa-home fa-2x"></i></div></Link>
-            <div className="test2"><i className="fa fa-wpforms fa-2x"></i></div>
-            <Link to="/dashboard"><div className="test3"><i className="fa fa-user fa-2x"></i></div></Link>
-            <div className="test4"><i className="fa fa-file fa-2x"></i></div>
-            <div className="mask2"><i className="fa fa-home fa-3x"></i></div>
-          </div>
-
-        )
 
 
     return (
       <ul>
-        <OnlyGuestLinks />
-        <OnlyAuthLinks />
+        <NavBar />
       </ul>
 
     );
