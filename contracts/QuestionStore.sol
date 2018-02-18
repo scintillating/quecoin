@@ -59,32 +59,6 @@ contract QuestionStore is Pausable {
         QuestionAnswered(questions[_questionId].asker, msg.sender, _questionId, id);
     }
 
-    function questionDetails(uint _questionId) view external
-    returns (
-        string question,
-        string desc,
-        address asker,
-        uint created,
-        uint votePool,
-        uint questionPool,
-        uint upvotePool,
-        uint downvotePool,
-        bool finalized)
-    {
-        Question storage q = questions[_questionId];
-
-        question = q.question;
-        desc = q.desc;
-        asker = q.asker;
-        created = q.created;
-        votePool = q.votePool;
-        questionPool = q.questionPool;
-        upvotePool = q.upvotePool;
-        downvotePool = q.downvotePool;
-        finalized = q.finalized;
-        // return (question, desc, asker, created, votePool, questionPool, upvotePool, downvotePool, finalized);
-    }
-
     // Called by asker
     function acceptAnswerAndFinalize(uint _questionId, uint _answerId) external {
         Question storage q = questions[_questionId];
@@ -158,6 +132,32 @@ contract QuestionStore is Pausable {
         }
         q.voteScore += _vote;
         Voted(msg.sender, _questionId);
+    }
+
+    function getQuestionDetails(uint _questionId) external view
+    returns (
+        string question,
+        string desc,
+        address asker,
+        uint created,
+        uint votePool,
+        uint questionPool,
+        uint upvotePool,
+        uint downvotePool,
+        bool finalized)
+    {
+        Question storage q = questions[_questionId];
+
+        question = q.question;
+        desc = q.desc;
+        asker = q.asker;
+        created = q.created;
+        votePool = q.votePool;
+        questionPool = q.questionPool;
+        upvotePool = q.upvotePool;
+        downvotePool = q.downvotePool;
+        finalized = q.finalized;
+        // return (question, desc, asker, created, votePool, questionPool, upvotePool, downvotePool, finalized);
     }
 
     function getVote(uint _questionId) external view returns (int) {
