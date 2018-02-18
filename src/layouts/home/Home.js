@@ -12,17 +12,17 @@ class Home extends Component {
         <NavBar/>
         <main className="container">
           <header className="jumbotron fadeInDown animated page-header" id="banner">
-            <h1 className="fadeInDown animatedDelay">QueCoin</h1>
+            <img src="https://i.imgur.com/vJwufW6.png" id="QueCoinLogo" className="fadeInDown animatedDelay"/>
             <p className="fadeInLeft animatedDelay text-warning">
-
-            </p>
-            <p>
-            </p>
-            <p>
-            </p>
-            <p>
               <em>Go forth young padawan and ask/answer questions!</em>
             </p>
+        </header>
+        <header className="jumbotron">
+          <div className="row">
+            <div className="col-6">
+
+            </div>
+          </div>
         </header>
       </main>
       </main>

@@ -97,5 +97,10 @@ p{
 }
 
 #toprow{
-  padding-top: 120px;
+  padding-top: 120px
+}
+
+#QueCoinLogo{
+  width:200px;
+  height:auto;
 }
