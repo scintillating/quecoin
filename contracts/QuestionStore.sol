@@ -14,8 +14,9 @@ contract QuestionStore is Pausable {
         uint created;
         uint votePool;
         uint questionPool;
-        uint upvotePool;
-        uint downvotePool;
+        uint upvotesInVotePool;
+        uint downvotesInVotePool;
+        // In terms of QUE
         int voteScore;
         bool finalized;
     }
@@ -31,7 +32,7 @@ contract QuestionStore is Pausable {
     event FlaggedAndFinalized(address asker, address finalizer, uint questionId);
     event Voted(address voter, uint questionId);
 
-    // User address -> questionId -> vote
+    // User address -> questionId -> vote amount (negative = downvote)
     mapping (address => mapping(uint => int)) private userToQuestionVote;
     mapping (uint => Answer[]) private answers;
     mapping (uint => address[]) private questionUpvoters;
@@ -83,7 +84,7 @@ contract QuestionStore is Pausable {
         for (uint i = 0; i < questionUpvoters[_questionId].length; i++) {
             address upvoter = questionUpvoters[_questionId][i];
             uint upvoteAmount = uint(userToQuestionVote[upvoter][_questionId]);
-            uint payout = (upvoteAmount / q.upvotePool) * q.votePool;
+            uint payout = (upvoteAmount / q.upvotesInVotePool) * q.votePool;
             require(quecoin.transferFrom(this, upvoter, payout));
         }
 
@@ -104,9 +105,8 @@ contract QuestionStore is Pausable {
         // Voter pool sent to each downvoter
         for (uint i = 0; i < questionDownvoters[_questionId].length; i++) {
             address downvoter = questionDownvoters[_questionId][i];
-            // Downvotes are represented as negative, so flip to positive
             uint downvoteAmount = uint(-1 * userToQuestionVote[downvoter][_questionId]);
-            uint payout = (downvoteAmount / q.downvotePool) * q.votePool;
+            uint payout = (downvoteAmount / q.downvotesInVotePool) * q.votePool;
             require(quecoin.transferFrom(this, downvoter, payout));
         }
 
@@ -125,10 +125,10 @@ contract QuestionStore is Pausable {
         userToQuestionVote[msg.sender][_questionId] += _vote;
         if (_vote > 0) {
             questionUpvoters[_questionId].push(msg.sender);
-            q.upvotePool += queCost;
+            q.upvotesInVotePool += queCost;
         } else {
             questionDownvoters[_questionId].push(msg.sender);
-            q.downvotePool += queCost;
+            q.downvotesInVotePool += queCost;
         }
         q.voteScore += _vote;
         Voted(msg.sender, _questionId);
@@ -143,8 +143,8 @@ contract QuestionStore is Pausable {
         uint votePool,
         uint questionPool,
         int voteScore,
-        uint upvotePool,
-        uint downvotePool,
+        uint upvotesInVotePool,
+        uint downvotesInVotePool,
         bool finalized)
     {
         Question storage q = questions[_questionId];
@@ -156,10 +156,10 @@ contract QuestionStore is Pausable {
         votePool = q.votePool;
         questionPool = q.questionPool;
         voteScore = q.voteScore;
-        upvotePool = q.upvotePool;
-        downvotePool = q.downvotePool;
+        upvotesInVotePool = q.upvotesInVotePool;
+        downvotesInVotePool = q.downvotesInVotePool;
         finalized = q.finalized;
-        // return (question, desc, asker, created, votePool, questionPool, upvotePool, downvotePool, finalized);
+        // return (question, desc, asker, created, votePool, questionPool, upvotesInVotePool, downvotesInVotePool, finalized);
     }
 
     function getVote(uint _questionId) external view returns (int) {
