@@ -202,7 +202,7 @@ contract QuestionStore {
     }
 
     function _isQuestionFinalizable(Question _question) private view returns (bool) {
-        // Only allow finalize five days after
+        // Only allow finalize seven days after
         return _question.created <= now - QUESTION_ANSWERING_PERIOD;
     }
 }
