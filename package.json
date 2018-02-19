@@ -2,6 +2,7 @@
   "name": "quecoin",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://myquecoin.com",
   "devDependencies": {
     "autoprefixer": "6.5.1",
     "babel-core": "6.17.0",
@@ -51,6 +52,7 @@
   "dependencies": {
     "bootstrap": "^4.0.0",
     "font-awesome": "^4.7.0",
+    "gh-pages": "^1.1.0",
     "jquery": "^3.3.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
@@ -64,6 +66,8 @@
   },
   "scripts": {
     "truffle": "truffle develop",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build_webpack",
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
