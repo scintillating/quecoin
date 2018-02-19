@@ -6,6 +6,7 @@ const web3Reducer = (state = initialState, action) => {
   if (action.type === 'WEB3_INITIALIZED')
   {
     return Object.assign({}, state, {
+
       web3Instance: action.payload.web3Instance
     })
   }

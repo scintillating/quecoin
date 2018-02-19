@@ -36,11 +36,11 @@ export default class QuestionApi {
     waitForTransaction(txnHash, interval) {
         var transactionReceiptAsync;
         interval = interval ? interval : 500;
-        transactionReceiptAsync = function(txnHash, resolve, reject) {
+        transactionReceiptAsync = (txnHash, resolve, reject) => {
             try {
                 var receipt = this.web3.eth.getTransactionReceipt(txnHash);
                 if (receipt == null) {
-                    setTimeout(function () {
+                    setTimeout(() => {
                         transactionReceiptAsync(txnHash, resolve, reject);
                     }, interval);
                 } else {
@@ -74,9 +74,15 @@ export default class QuestionApi {
         return await this.quecoin.balanceOf.call(this.web3.eth.accounts[0]);
     }
 
+    async getQueAuthorization() {
+        return await this.quecoin.allowance(this.web3.eth.accounts[0], this.questionStore.address);
+    }
+
     async askQuestion(question, description) {
         try {
-            const txHash = await this.questionStore.askQuestion.sendTransaction(question, description, { from: this.web3.eth.accounts[0] });
+            const txHash = await this.questionStore.askQuestion.sendTransaction(
+                question, description,
+                { from: this.web3.eth.accounts[0] });
             console.log("waiting for transaction to be mined")
             await this.waitForTransaction(txHash)
             return true;
@@ -84,7 +90,6 @@ export default class QuestionApi {
             console.error(e);
             return false;
         }
-
     }
 
     async getQuestions() {
@@ -96,10 +101,11 @@ export default class QuestionApi {
             const arr = await this.questionStore.getQuestionDetails.call(i);
             questions.push(parseQuestionArray(arr));
             const answerCount = await this.questionStore.getQuestionAnswerCount(i);
-            questions.answers = [];
+            questions[i].answers = [];
             for (let j = 0; j < answerCount; j++) {
                 const ansArr = await this.questionStore.getQuestionAnswer(i, j);
-                questions.answers.push({ answer: ansArr[0], author: ansArr[1] });
+                console.log(ansArr);
+                questions[i].answers.push({ answer: ansArr[0], author: ansArr[1] });
             }
         }
         console.log("Got all questions");
@@ -108,16 +114,22 @@ export default class QuestionApi {
     }
 
     async answerQuestion(questionId, answer) {
-        const txHash = await this.questionStore.answerQuestion.sendTransaction(
-            questionId, answer,
-            { from: this.web3.eth.accounts[0] }
-        )
-        await this.waitForTransaction(txHash);
-        return true;
+        try {
+            const txHash = await this.questionStore.answerQuestion.sendTransaction(
+                questionId, answer,
+                { from: this.web3.eth.accounts[0] }
+            )
+            console.log("waiting for transaction to be mined")
+            await this.waitForTransaction(txHash)
+            return true;
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
     }
 
     async finalizeQuestion(questionId, answerId) {
-        
+
     }
 
 }

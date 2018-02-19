@@ -18,7 +18,7 @@ import 'font-awesome/css/font-awesome.min.css'
 import $ from 'jquery'
 import "bootstrap/dist/css/bootstrap.min.css"
 
-$(document).ready(function() {
+setInterval(function() {
 
 /* NavBar animations below: */
   var active1 = false;
@@ -42,21 +42,12 @@ $(document).ready(function() {
     active4 = !active4;
 
     });
-});
+}, 100);
 
 class App extends Component {
   render() {
       const api = new QuestionApi();
       console.log(this.props)
-      if (this.props.web3 != null) {
-          (async () => {
-            await api.init(this.props.web3)
-            await api.getQuestions()
-          })();
-      }
-      
-
-
 
     return (
       <ul>

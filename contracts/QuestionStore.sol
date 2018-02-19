@@ -4,7 +4,7 @@ import "./Quecoin.sol";
 
 
 contract QuestionStore {
-    uint private constant QUESTION_ANSWERING_PERIOD = 1 minute;
+    uint private constant QUESTION_ANSWERING_PERIOD = 7 days;
 
     struct Question {
         string question;
