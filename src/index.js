@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, IndexRoute, browserHistory } from 'react-router'
+import { Route } from 'react-router'
+import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import { syncHistoryWithStore } from 'react-router-redux'
-import { UserIsAuthenticated, UserIsNotAuthenticated } from './util/wrappers.js'
 import getWeb3 from './util/web3/getWeb3'
 
 // Layouts
@@ -15,9 +14,7 @@ import Profile from './user/layouts/profile/Profile'
 
 // Redux Store
 import store from './store'
-
-// Initialize react-router-redux.
-const history = syncHistoryWithStore(browserHistory, store)
+import Switch from 'react-router-dom/Switch';
 
 // Initialize web3 and set in Redux.
 getWeb3
@@ -30,14 +27,14 @@ getWeb3
 
 ReactDOM.render((
     <Provider store={store}>
-      <Router history={history}>
-        <Route path="/">
-          <IndexRoute component={Home} />
-          <Route path="dashboard" component={Dashboard} />
-          <Route path="forums" component={Forums} />
-          <Route path="profile" component={UserIsAuthenticated(Profile)} />
-        </Route>
-      </Router>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/" exact component={Home} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/forums" component={Forums} />
+          <Route path="/profile" component={Profile} />
+        </Switch>
+      </BrowserRouter>
     </Provider>
   ),
   document.getElementById('root')

@@ -31,7 +31,7 @@ class Forums extends Component {
 
   async answer(questionId) {
     await this.state.api.answerQuestion(questionId, this.state.answers[questionId]);
-    location.reload(true);
+    window.location.reload(true);
   }
 
   handleChange(questionId, content) {
@@ -46,7 +46,7 @@ class Forums extends Component {
  async askQuestion() {
       console.log("Adding question", this.state.newQuestion);
       await this.state.api.askQuestion(this.state.newQuestion, "xd");
-      location.reload(true);
+      window.location.reload(true);
   }
 
   render() {
