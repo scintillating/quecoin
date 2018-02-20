@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import getWeb3 from "./web3/getWeb3";
+import getWeb3 from "./util/getWeb3";
 import { web3Initialized } from "./web3/actions";
 import { createStore, applyMiddleware, compose } from "redux";
 import thunkMiddleware from "redux-thunk";
