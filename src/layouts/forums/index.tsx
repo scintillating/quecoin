@@ -1,19 +1,30 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import QuestionApi from "../../util/QuestionApi";
 import NavBar from "../../NavBar";
 
-class Forums extends Component {
+class Forums extends Component<
+  { web3: any },
+  {
+    api?: QuestionApi;
+    newQuestion?: string;
+    status: string;
+    questions?: any[];
+    answers?: string[];
+  }
+> {
   constructor(props) {
     super(props);
     this.state = { status: "NOT_LOADED", answers: [] };
   }
 
   componentDidMount() {
-    setTimeout(async () => {
+    (async () => {
       if (this.props.web3 != null) {
-        const api = new QuestionApi(this.props.web3);
+        const api = new QuestionApi();
         await api.init(this.props.web3);
+        console.log(api);
         const questions = await api.getQuestions();
         if ((await api.getQueAuthorization()).toNumber() === 0) {
           await api.authorizeQue(100);
@@ -23,8 +34,10 @@ class Forums extends Component {
           questions: questions,
           api: api
         });
+      } else {
+        console.log("web3 is null, not loading yet");
       }
-    }, 2000);
+    })();
   }
 
   async answer(questionId) {
@@ -122,6 +135,8 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, dispatch => {
-  return {};
-})(Forums);
+export default withRouter(
+  connect(mapStateToProps, dispatch => {
+    return {};
+  })(Forums)
+);

@@ -71,25 +71,11 @@ setInterval(function() {
   });
 }, 100);
 
-class App extends Component {
-  render() {
-    return (
-      <Switch>
-        <Route path="/" exact component={Home} />
-        <Route path="/forums" component={Forums} />
-      </Switch>
-    );
-  }
-}
-
-const mapStateToProps = (state, ownProps) => {
-  return {
-    web3: state.web3.web3Instance
-  };
-};
-
-export default withRouter(
-  connect(mapStateToProps, dispatch => {
-    return {};
-  })(App)
+const App = () => (
+  <Switch>
+    <Route path="/" exact={true} component={Home} />
+    <Route path="/forums" component={Forums} />
+  </Switch>
 );
+
+export default App;

@@ -19,6 +19,7 @@ function parseQuestionArray(arr) {
 
 export default class QuestionApi {
   async init(web3) {
+    console.log("QuestionApi: init with web3", web3);
     this.web3 = web3;
     const Quecoin = contract(QuecoinContract);
     const QuestionStore = contract(QuestionStoreContract);

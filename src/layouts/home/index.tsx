@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import NavBar from "../../NavBar.js";
+import NavBar from "../../NavBar";
 import QuecoinLogo from "../../images/quecoin-logo.png";
 import "../../animate.css";
 

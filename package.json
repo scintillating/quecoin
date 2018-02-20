@@ -4,14 +4,23 @@
   "private": true,
   "homepage": "https://myquecoin.com",
   "devDependencies": {
+    "jest": "^20.0.0",
     "npm-check-updates": "^2.14.0",
     "prettier": "^1.10.2",
     "react-app-rewired": "^1.4.1",
     "react-scripts": "^1.1.1",
+    "react-scripts-ts": "^2.13.0",
     "truffle": "^4.0.6",
-    "typechain": "^0.1.2"
+    "typechain": "^0.1.2",
+    "typescript": "^2.7.2"
   },
   "dependencies": {
+    "@types/react": "^16.0.38",
+    "@types/react-dom": "^16.0.4",
+    "@types/react-redux": "^5.0.15",
+    "@types/react-router": "^4.0.22",
+    "@types/react-router-redux": "^5.0.12",
+    "bignumber.js": "^5.0.0",
     "bootstrap": "^4.0.0",
     "font-awesome": "^4.7.0",
     "gh-pages": "^1.1.0",
@@ -33,8 +42,8 @@
     "deploy": "gh-pages -d build_webpack",
     "predeploy": "npm run build",
     "prettier": "prettier --write 'src/**/*.js'",
-    "start": "react-app-rewired start",
-    "test": "react-app-rewired test --env=jsdom",
+    "start": "react-app-rewired start --scripts-version react-scripts-ts",
+    "test": "react-app-rewired test --scripts-version react-scripts-ts --env=jsdom",
     "truffle": "truffle develop"
   }
 }
