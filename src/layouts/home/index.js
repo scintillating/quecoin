@@ -10,8 +10,8 @@ class Home extends Component {
       <main className="container">
         <NavBar/>
         <main className="container">
-          <header className="jumbotron fadeInDown animated page-header" id="banner">
-            <img src="https://i.imgur.com/vJwufW6.png" id="QueCoinLogo" className="fadeInDown animatedDelay"/>
+          <header className="jumbotron bg-dark fadeInDown animated page-header" id="banner">
+            <img src="https://i.imgur.com/vJwufW6.png" className="fadeInDown animatedDelay"/>
             <p className="fadeInLeft animatedDelay text-warning">
               <em>Sourcing and answering high-quality questions</em>
             </p> <br></br>

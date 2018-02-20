@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
+import { Link, Route, Switch } from 'react-router'
+import { BrowserRouter } from 'react-router-dom'
 
 // UI Components
-import LoginButtonContainer from './user/ui/loginbutton/LoginButtonContainer'
-import LogoutButtonContainer from './user/ui/logoutbutton/LogoutButtonContainer'
+import Home from './layouts/home'
+import Forums from './layouts/forums'
 
 import QuestionApi from './util/QuestionApi';
 
@@ -46,13 +47,13 @@ setInterval(function() {
 
 class App extends Component {
   render() {
-      const api = new QuestionApi();
-      console.log(this.props)
-
     return (
-      <ul>
-      </ul>
-
+      <BrowserRouter>
+        <Switch>
+          <Route path="/" exact component={Home} />
+          <Route path="/forums" component={Forums} />
+        </Switch>
+      </BrowserRouter>
     );
   }
 }
