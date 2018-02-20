@@ -45,8 +45,10 @@
     "predeploy": "npm run build",
     "prettier": "prettier --write 'src/**/*.js'",
     "start": "react-app-rewired start --scripts-version react-scripts-ts",
-    "test": "react-app-rewired test --scripts-version react-scripts-ts --env=jsdom",
-    "truffle": "truffle compile && npm run typechain  && truffle develop",
-    "typechain": "typechain 'build/contracts/**/*.json' --outDir src/typechain"
+    "test":
+      "react-app-rewired test --scripts-version react-scripts-ts --env=jsdom",
+    "truffle": "truffle compile && npm run typechain && truffle develop",
+    "typechain":
+      "typechain 'build/contracts/**/*.json' --outDir src/typechain --force"
   }
 }
