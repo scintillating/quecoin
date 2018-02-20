@@ -24,14 +24,15 @@ const store = createStore(
 );
 
 // Initialize web3 and set in Redux.
-getWeb3
-  .then(web3 => {
-    store.dispatch(web3Initialized(web3));
+(async () => {
+  try {
+    const web3 = await getWeb3;
     console.log("Web3 initialized!");
-  })
-  .catch(() => {
+    store.dispatch(web3Initialized(web3));
+  } catch (e) {
     console.log("Error in web3 initialization.");
-  });
+  }
+})();
 
 ReactDOM.render(
   <Provider store={store}>
