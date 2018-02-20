@@ -3,6 +3,14 @@ pragma solidity ^0.4.18;
 import "./Quecoin.sol";
 
 
+/*
+Requirements
+- Ask Question (cost: 5 QUE)
+- Get Question
+- Add answer to question
+- Get answers of question
+*/
+
 contract QuestionStore {
     uint private constant QUESTION_ANSWERING_PERIOD = 7 days;
 
@@ -206,11 +214,3 @@ contract QuestionStore {
         return _question.created <= now - QUESTION_ANSWERING_PERIOD;
     }
 }
-
-/* welcome back young padawan
-
-Requirements
-- Ask Question (cost: 5 QUE)
-- Get Question
-- Add answer to question
-- Get answers of question */
