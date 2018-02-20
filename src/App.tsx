@@ -18,7 +18,7 @@ import "font-awesome/css/font-awesome.min.css";
 import $ from "jquery";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-setInterval(function() {
+setInterval(() => {
   /* NavBar animations below: */
   var active1 = false;
   var active2 = false;
