@@ -98,19 +98,17 @@ class Forums extends Component<
                         </em>
                       </small>
                     </p>
-                    <p>
-                      <ul>
-                        {q.answers.map((a, j) => (
-                          <li key={j}>
-                            {a.answer}
-                            <br />
-                            <em>
-                              <small>posted by {a.author}</small>
-                            </em>
-                          </li>
-                        ))}
-                      </ul>
-                    </p>
+                    <ul>
+                      {q.answers.map((a, j) => (
+                        <li key={j}>
+                          {a.answer}
+                          <br />
+                          <em>
+                            <small>posted by {a.author}</small>
+                          </em>
+                        </li>
+                      ))}
+                    </ul>
                     <p>
                       <textarea
                         onChange={e => this.handleChange(i, e.target.value)}
