@@ -1,9 +1,11 @@
 ///<reference path="index.d.ts"/>
+///<reference path="../node_modules/web3-typescript-typings/index.d.ts"/>
 
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import getWeb3 from "./util/getWeb3";
+import Web3 from "web3";
 import { web3Initialized } from "./web3/actions";
 import { createStore, applyMiddleware, compose } from "redux";
 import thunkMiddleware from "redux-thunk";
@@ -29,7 +31,7 @@ const store = createStore(
 // Initialize web3 and set in Redux.
 (async () => {
   try {
-    const web3 = await getWeb3;
+    const web3: Web3 = await getWeb3();
     console.log("Web3 initialized!");
     store.dispatch(web3Initialized(web3));
   } catch (e) {

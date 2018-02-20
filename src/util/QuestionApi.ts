@@ -1,5 +1,7 @@
+///<reference path="../../node_modules/web3-typescript-typings/index.d.ts"/>
 const QuecoinAbi = require("../../build/contracts/Quecoin.json");
 const QuestionStoreAbi = require("../../build/contracts/QuestionStore.json");
+import Web3 from "web3";
 import { Quecoin } from "../typechain/Quecoin";
 import contract from "truffle-contract";
 import { QuestionStore } from "../typechain/QuestionStore";
@@ -22,9 +24,9 @@ function parseQuestionArray(arr) {
 export default class QuestionApi {
   quecoin: Quecoin;
   questionStore: QuestionStore;
-  web3: any;
+  web3: Web3;
 
-  async init(web3) {
+  async init(web3: Web3) {
     console.log("QuestionApi: init with web3", web3);
     this.web3 = web3;
     const truffleQuecoin = contract(QuecoinAbi);
