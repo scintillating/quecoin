@@ -13,3 +13,9 @@ Requirements: npm.
 1. `npm install`
 2. Build contracts with `npm run truffle` and keep the `truffle develop` window open to run the test network.
 3. `npm start` in another terminal window.
+
+### Updating Contracts
+
+1. `truffle compile`
+2. `migrate` in development console
+3. `npm run typechain`
