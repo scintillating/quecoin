@@ -19,7 +19,7 @@ class Forums extends Component<
     this.state = { status: "NOT_LOADED", answers: [] };
   }
 
-  componentDidMount() {
+  componentDidUpdate() {
     (async () => {
       if (this.props.web3 != null) {
         const api = new QuestionApi();
@@ -131,7 +131,7 @@ class Forums extends Component<
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    web3: state.web3.web3Instance
+    web3: state.web3.web3
   };
 };
 
