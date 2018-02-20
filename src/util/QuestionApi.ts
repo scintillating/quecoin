@@ -1,6 +1,8 @@
-import QuecoinContract from "../../build/contracts/Quecoin.json";
-import QuestionStoreContract from "../../build/contracts/QuestionStore.json";
+const QuecoinAbi = require("../../build/contracts/Quecoin.json");
+const QuestionStoreAbi = require("../../build/contracts/QuestionStore.json");
+import { Quecoin } from "../typechain/Quecoin";
 import contract from "truffle-contract";
+import { QuestionStore } from "../typechain/QuestionStore";
 
 function parseQuestionArray(arr) {
   return {
@@ -18,20 +20,27 @@ function parseQuestionArray(arr) {
 }
 
 export default class QuestionApi {
+  quecoin: Quecoin;
+  questionStore: QuestionStore;
+  web3: any;
+
   async init(web3) {
     console.log("QuestionApi: init with web3", web3);
     this.web3 = web3;
-    const Quecoin = contract(QuecoinContract);
-    const QuestionStore = contract(QuestionStoreContract);
-    Quecoin.setProvider(web3.currentProvider);
-    QuestionStore.setProvider(web3.currentProvider);
-    this.quecoin = await Quecoin.deployed();
-    this.questionStore = await QuestionStore.deployed();
-    console.log("Quecoin:", this.quecoin.address);
-    console.log("QuestionStore:", this.questionStore.address);
+    const truffleQuecoin = contract(QuecoinAbi);
+    const truffleQuestionStore = contract(QuestionStoreAbi);
+    truffleQuecoin.setProvider(web3.currentProvider);
+    truffleQuestionStore.setProvider(web3.currentProvider);
+    const quecoinAddress = (await truffleQuecoin.deployed()).address;
+    const questionStoreAddress = (await truffleQuestionStore.deployed())
+      .address;
+    console.log("Quecoin:", quecoinAddress);
+    console.log("QuestionStore:", questionStoreAddress);
+    this.quecoin = new Quecoin(web3, quecoinAddress);
+    this.questionStore = new QuestionStore(web3, questionStoreAddress);
   }
 
-  waitForTransaction(txnHash, interval) {
+  waitForTransaction(txnHash, interval?: number) {
     var transactionReceiptAsync;
     interval = interval ? interval : 500;
     transactionReceiptAsync = (txnHash, resolve, reject) => {
@@ -65,13 +74,11 @@ export default class QuestionApi {
   }
 
   async authorizeQue(number) {
-    const decimals = (await this.quecoin.decimals.call()).toNumber();
+    const decimals = (await this.quecoin.decimals).toNumber();
     console.log("Asking for authorization of QUE", decimals, number);
-    return await this.quecoin.approve.sendTransaction(
-      this.questionStore.address,
-      (number * 10 ** decimals).toString(),
-      { from: this.web3.eth.accounts[0] }
-    );
+    return await this.quecoin
+      .approveTx(this.questionStore.address, number * 10 ** decimals)
+      .send({ from: this.web3.eth.accounts[0] });
   }
 
   async getQueBalance() {
@@ -87,11 +94,9 @@ export default class QuestionApi {
 
   async askQuestion(question, description) {
     try {
-      const txHash = await this.questionStore.askQuestion.sendTransaction(
-        question,
-        description,
-        { from: this.web3.eth.accounts[0] }
-      );
+      const txHash = await this.questionStore
+        .askQuestionTx(question, description)
+        .send({ from: this.web3.eth.accounts[0] });
       console.log("waiting for transaction to be mined");
       await this.waitForTransaction(txHash);
       return true;
@@ -103,13 +108,16 @@ export default class QuestionApi {
 
   async getQuestions() {
     let questions = [];
-    const questionCount = await this.questionStore.getQuestionCount.call();
-    console.log("Got", questionCount.toNumber(), "questions");
+    const questionCount = (await this.questionStore
+      .getQuestionCount).toNumber();
+    console.log("Got", questionCount, "questions");
     for (let i = 0; i < questionCount; i++) {
       console.log(`Getting question details for #${i}`);
       const arr = await this.questionStore.getQuestionDetails.call(i);
       questions.push(parseQuestionArray(arr));
-      const answerCount = await this.questionStore.getQuestionAnswerCount(i);
+      const answerCount = (await this.questionStore.getQuestionAnswerCount(
+        i
+      )).toNumber();
       questions[i].answers = [];
       for (let j = 0; j < answerCount; j++) {
         const ansArr = await this.questionStore.getQuestionAnswer(i, j);
@@ -124,11 +132,9 @@ export default class QuestionApi {
 
   async answerQuestion(questionId, answer) {
     try {
-      const txHash = await this.questionStore.answerQuestion.sendTransaction(
-        questionId,
-        answer,
-        { from: this.web3.eth.accounts[0] }
-      );
+      const txHash = await this.questionStore
+        .answerQuestionTx(questionId, answer)
+        .send({ from: this.web3.eth.accounts[0] });
       console.log("waiting for transaction to be mined");
       await this.waitForTransaction(txHash);
       return true;

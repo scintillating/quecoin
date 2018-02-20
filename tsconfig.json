@@ -8,6 +8,7 @@
     "moduleResolution": "node",
     "removeComments": true,
     "preserveConstEnums": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "target": "esnext"
   }
 }

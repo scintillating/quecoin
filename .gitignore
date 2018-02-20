@@ -62,3 +62,6 @@ typings/
 
 # webpack build
 /build_webpack/
+
+# Typechain generated files
+/src/typechain/
