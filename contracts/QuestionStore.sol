@@ -14,6 +14,8 @@ Requirements
 */
 
 contract QuestionStore is Ownable, Pausable {
+    using SafeMath for uint256;
+
     uint private constant QUESTION_ANSWERING_PERIOD = 7 days;
 
     struct Question {
@@ -81,11 +83,11 @@ contract QuestionStore is Ownable, Pausable {
         // Quecoins sent to the final answerer
         Answer storage questionAnswer = answers[_questionId][_answerId];
         address answerer = questionAnswer.author;
-        uint coinsForAnswerer = 3 * q.questionPool / 4;
+        uint coinsForAnswerer = q.questionPool.mul(3).div(4);
         require(quecoin.transferFrom(this, answerer, coinsForAnswerer));
 
         // Quecoins sent to the asker
-        uint coinsForAsker = q.questionPool / 4;
+        uint coinsForAsker = q.questionPool.div(4);
         require(quecoin.transferFrom(this, q.asker, coinsForAsker));
 
         // Upvoters get their money back and downvoters' money proportional
@@ -94,7 +96,7 @@ contract QuestionStore is Ownable, Pausable {
         for (uint i = 0; i < questionUpvoters[_questionId].length; i++) {
             address upvoter = questionUpvoters[_questionId][i];
             uint upvoteAmount = uint(userToQuestionVote[upvoter][_questionId]);
-            uint payout = (upvoteAmount / q.upvotesInVotePool) * q.votePool;
+            uint payout = upvoteAmount.div(q.upvotesInVotePool).mul(q.votePool);
             require(quecoin.transferFrom(this, upvoter, payout));
         }
 
@@ -115,8 +117,8 @@ contract QuestionStore is Ownable, Pausable {
         // Voter pool sent to each downvoter
         for (uint i = 0; i < questionDownvoters[_questionId].length; i++) {
             address downvoter = questionDownvoters[_questionId][i];
-            uint downvoteAmount = uint(-1 * userToQuestionVote[downvoter][_questionId]);
-            uint payout = (downvoteAmount / q.downvotesInVotePool) * q.votePool;
+            uint downvoteAmount = uint(userToQuestionVote[downvoter][_questionId] * -1);
+            uint payout = downvoteAmount.div(q.downvotesInVotePool).mul(q.votePool);
             require(quecoin.transferFrom(this, downvoter, payout));
         }
 
@@ -212,7 +214,7 @@ contract QuestionStore is Ownable, Pausable {
     }
 
     function _queAmount(uint _que) private view returns (uint) {
-        return _que * (10 ** uint256(quecoin.decimals()));
+        return _que.mul(10 ** uint256(quecoin.decimals()));
     }
 
     function _isQuestionFinalizable(Question _question) private view returns (bool) {

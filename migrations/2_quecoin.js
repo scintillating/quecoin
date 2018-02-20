@@ -1,6 +1,5 @@
 const Quecoin = artifacts.require("./Quecoin.sol");
 
-module.exports = (deployer) => {
-
+module.exports = deployer => {
   deployer.deploy(Quecoin);
 };
