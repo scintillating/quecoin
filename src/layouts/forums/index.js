@@ -56,7 +56,7 @@ class Forums extends Component {
         <main className="container">
           <NavBar />
           <div className="pure-g">
-            <div className="pure-u-1-1 jumbotron">
+            <div className="pure-u-1-1 jumbotron text-light bg-dark">
               <h1>Forums</h1>
               <h2>Existing Questions</h2>
               <ul>
