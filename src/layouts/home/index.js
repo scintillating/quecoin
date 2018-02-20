@@ -14,7 +14,11 @@ class Home extends Component {
             id="banner"
           >
             <h1>
-              <img src={QuecoinLogo} className="fadeInDown animatedDelay" />
+              <img
+                src={QuecoinLogo}
+                alt="Quecoin logo"
+                className="fadeInDown animatedDelay"
+              />
             </h1>
             <p className="fadeInLeft animatedDelay text-warning">
               <em>Sourcing and answering high-quality questions</em>

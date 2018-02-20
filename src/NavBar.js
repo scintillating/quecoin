@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React from "react";
 import { Link } from "react-router-dom";
 
 export default () => (
@@ -15,7 +14,7 @@ export default () => (
       </div>
     </Link>
     <div className="test3 linkIsWhite">
-      <a href="https://metamask.io/" target="_blank">
+      <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer">
         <i className="fa fa-user fa-2x" />
       </a>
     </div>
@@ -23,6 +22,7 @@ export default () => (
       <a
         href="https://docs.google.com/document/d/1SUYIcKfctowjjmqOM4c3Bq4D337DjCJDVFs9w4ppKbg/edit"
         target="_blank"
+        rel="noopener noreferrer"
       >
         <i className="fa fa-file fa-2x" />
       </a>

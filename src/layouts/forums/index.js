@@ -15,7 +15,7 @@ class Forums extends Component {
         const api = new QuestionApi(this.props.web3);
         await api.init(this.props.web3);
         const questions = await api.getQuestions();
-        if ((await api.getQueAuthorization()) == 0) {
+        if ((await api.getQueAuthorization()).toNumber() === 0) {
           await api.authorizeQue(100);
         }
         this.setState({
@@ -36,12 +36,18 @@ class Forums extends Component {
   }
 
   handleChange(questionId, content) {
-    this.state.answers[questionId] = content;
+    const answers = this.state.answers.slice();
+    answers[questionId] = content;
+    this.setState({
+      answers
+    });
     console.log("Adding for", questionId, content);
   }
 
   handleQuestionChange(content) {
-    this.state.newQuestion = content;
+    this.setState({
+      newQuestion: content
+    });
   }
 
   async askQuestion() {

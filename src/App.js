@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Link, Route, Switch } from "react-router";
+import { Route, Switch } from "react-router";
 import { withRouter } from "react-router-dom";
 
 // UI Components
 import Home from "./layouts/home";
 import Forums from "./layouts/forums";
-
-import QuestionApi from "./util/QuestionApi";
 
 // Styles
 import "./css/oswald.css";
