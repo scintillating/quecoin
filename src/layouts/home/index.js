@@ -17,9 +17,7 @@ class Home extends Component {
               <img src={QuecoinLogo} className="fadeInDown animatedDelay" />
             </h1>
             <p className="fadeInLeft animatedDelay text-warning">
-              <em>
-                Sourcing and answering high-quality questions
-              </em>
+              <em>Sourcing and answering high-quality questions</em>
             </p>
             <p>
               Quecoin incentivizes both the answerer, asker and the supporters

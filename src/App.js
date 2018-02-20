@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link, Route, Switch } from "react-router";
-import { BrowserRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 // UI Components
 import Home from "./layouts/home";
@@ -76,12 +76,10 @@ setInterval(function() {
 class App extends Component {
   render() {
     return (
-      <BrowserRouter>
-        <Switch>
-          <Route path="/" exact component={Home} />
-          <Route path="/forums" component={Forums} />
-        </Switch>
-      </BrowserRouter>
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route path="/forums" component={Forums} />
+      </Switch>
     );
   }
 }
@@ -92,6 +90,8 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, dispatch => {
-  return {};
-})(App);
+export default withRouter(
+  connect(mapStateToProps, dispatch => {
+    return {};
+  })(App)
+);
