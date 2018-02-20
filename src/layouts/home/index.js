@@ -22,7 +22,7 @@ class Home extends Component {
               </em>
             </p>
             <p>
-              QueCoin incentivizes both the answerer, asker and the supporters
+              Quecoin incentivizes both the answerer, asker and the supporters
               when asking intelligent questions, using uncensorable and
               decentralized data storage, so no entity can interfere.
             </p>
@@ -41,7 +41,6 @@ class Home extends Component {
         </main>
       </div>
     );
->>>>>>> Major cleanups
   }
 }
 
