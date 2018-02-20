@@ -1,6 +1,8 @@
 pragma solidity ^0.4.18;
 
 import "./Quecoin.sol";
+import "zeppelin-solidity/contracts/lifecycle/Pausable.sol";
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
 /*
@@ -11,7 +13,7 @@ Requirements
 - Get answers of question
 */
 
-contract QuestionStore {
+contract QuestionStore is Ownable, Pausable {
     uint private constant QUESTION_ANSWERING_PERIOD = 7 days;
 
     struct Question {
@@ -54,7 +56,7 @@ contract QuestionStore {
         changeQuecoinAddress(initialQuecoinAddress);
     }
 
-    function askQuestion(string _question, string _description) external {
+    function askQuestion(string _question, string _description) external whenNotPaused {
         // Initialize question with 0 vote and question pools
         Question memory newQuestion = Question(_question, _description, msg.sender, now, 0, 0, 0, 0, 0, false);
         _requireQuestionPoolPayment(newQuestion, _queAmount(10));
@@ -62,14 +64,14 @@ contract QuestionStore {
         QuestionAsked(msg.sender, id);
     }
 
-    function answerQuestion(uint _questionId, string _answer) external {
+    function answerQuestion(uint _questionId, string _answer) external whenNotPaused {
         _requireQuestionPoolPayment(questions[_questionId], _queAmount(5));
         uint id = answers[_questionId].push(Answer(_answer, msg.sender)) - 1;
         QuestionAnswered(questions[_questionId].asker, msg.sender, _questionId, id);
     }
 
     // Called by asker
-    function acceptAnswerAndFinalize(uint _questionId, uint _answerId) external {
+    function acceptAnswerAndFinalize(uint _questionId, uint _answerId) external whenNotPaused {
         Question storage q = questions[_questionId];
         require(q.asker == msg.sender); // Only asker can finalize question
         require(_isQuestionFinalizable(q));
@@ -101,7 +103,7 @@ contract QuestionStore {
     }
 
     // Callable by anyone
-    function flagAndFinalize(uint _questionId) external {
+    function flagAndFinalize(uint _questionId) external whenNotPaused {
         Question storage q = questions[_questionId];
         require(_isQuestionFinalizable(q));
         require(q.finalized == false);
@@ -120,11 +122,10 @@ contract QuestionStore {
 
         q.finalized = true;
         FlaggedAndFinalized(q.asker, msg.sender, _questionId);
-        // muy bein esteban
     }
 
     // 1 vote corresponds with 1 QUE
-    function vote(uint _questionId, int _vote) external {
+    function vote(uint _questionId, int _vote) external whenNotPaused {
         require(userToQuestionVote[msg.sender][_questionId] == 0); // Never voted before
         require(_vote != 0); // No empty votes please
         Question storage q = questions[_questionId];
@@ -140,6 +141,11 @@ contract QuestionStore {
         }
         q.voteScore += _vote;
         Voted(msg.sender, _questionId);
+    }
+
+    function abandonShip() external whenPaused onlyOwner {
+        // TODO Return all funds
+        // selfdestruct();
     }
 
     function getQuestionDetails(uint _questionId) external view
@@ -187,7 +193,7 @@ contract QuestionStore {
         return userToQuestionVote[msg.sender][_questionId];
     }
 
-    function changeQuecoinAddress(address _newAddress) private {
+    function changeQuecoinAddress(address _newAddress) public onlyOwner {
         quecoin = Quecoin(_newAddress);
     }
 
