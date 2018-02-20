@@ -36,6 +36,7 @@
     "redux-auth-wrapper": "^2.0.2",
     "redux-thunk": "^2.2.0",
     "truffle-contract": "^3.0.3",
+    "web3": "^0.20.5",
     "web3-typescript-typings": "^0.9.11",
     "zeppelin-solidity": "1.6.0"
   },
@@ -45,10 +46,8 @@
     "predeploy": "npm run build",
     "prettier": "prettier --write 'src/**/*.js'",
     "start": "react-app-rewired start --scripts-version react-scripts-ts",
-    "test":
-      "react-app-rewired test --scripts-version react-scripts-ts --env=jsdom",
+    "test": "react-app-rewired test --scripts-version react-scripts-ts --env=jsdom",
     "truffle": "truffle compile && npm run typechain && truffle develop",
-    "typechain":
-      "typechain 'build/contracts/**/*.json' --outDir src/typechain --force"
+    "typechain": "typechain 'build/contracts/**/*.json' --outDir src/typechain --force"
   }
 }

@@ -9,7 +9,7 @@ class Forums extends Component<
   {
     api?: QuestionApi;
     newQuestion?: string;
-    status: string;
+    status: "LOADED" | "NOT_LOADED";
     questions?: any[];
     answers?: string[];
   }
@@ -21,22 +21,30 @@ class Forums extends Component<
 
   componentDidUpdate() {
     (async () => {
-      if (this.props.web3 != null) {
-        const api = new QuestionApi();
-        await api.init(this.props.web3);
-        console.log(api);
-        const questions = await api.getQuestions();
-        if ((await api.getQueAuthorization()).toNumber() === 0) {
-          await api.authorizeQue(100);
-        }
-        this.setState({
-          status: "LOADED",
-          questions: questions,
-          api: api
-        });
-      } else {
+      if (this.props.web3 === null) {
         console.log("web3 is null, not loading yet");
+        return;
       }
+      if (this.state.status === "LOADED") {
+        console.log("Already loaded, not loading contracts");
+        return;
+      }
+
+      console.log("Account:", this.props.web3.eth.accounts[0]);
+
+      const api = new QuestionApi();
+      await api.init(this.props.web3);
+      api.printDebugInfo();
+      const questions = await api.getQuestions();
+      const queAuthorization = await api.getQueAuthorization();
+      if (queAuthorization.toNumber() < 100) {
+        await api.authorizeQue(100);
+      }
+      this.setState({
+        status: "LOADED",
+        questions: questions,
+        api: api
+      });
     })();
   }
 

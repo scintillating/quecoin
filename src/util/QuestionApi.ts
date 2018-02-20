@@ -5,6 +5,7 @@ import Web3 from "web3";
 import { Quecoin } from "../typechain/Quecoin";
 import contract from "truffle-contract";
 import { QuestionStore } from "../typechain/QuestionStore";
+import TxFailedError from "./TxFailedError";
 
 function parseQuestionArray(arr) {
   return {
@@ -42,49 +43,70 @@ export default class QuestionApi {
     this.questionStore = new QuestionStore(web3, questionStoreAddress);
   }
 
-  waitForTransaction(txnHash, interval?: number) {
-    var transactionReceiptAsync;
-    interval = interval ? interval : 500;
-    transactionReceiptAsync = (txnHash, resolve, reject) => {
-      try {
-        var receipt = this.web3.eth.getTransactionReceipt(txnHash);
-        if (receipt == null) {
+  waitForTransaction(txHash: string | string[], interval?: number) {
+    interval = interval ? interval : 50;
+    console.log("Waiting for txn with hash", txHash, "and interval", interval);
+    const transactionReceiptAsync = async (txHash, resolve, reject) => {
+      console.log("Getting receipt");
+      this.web3.eth.getTransactionReceipt(txHash, (err, receipt) => {
+        if (err) {
+          reject(err);
+        }
+
+        if (receipt === null) {
+          console.log("Waiting for transaction");
           setTimeout(() => {
-            transactionReceiptAsync(txnHash, resolve, reject);
+            transactionReceiptAsync(txHash, resolve, reject);
           }, interval);
+        } else if (receipt.status === 0) {
+          // status 0 indicates a failed transaction
+          reject(new TxFailedError("Failed transaction", txHash, receipt));
         } else {
+          console.log("Got transaction receipt", receipt);
+          console.log("Transaction successful!");
           resolve(receipt);
         }
-      } catch (e) {
-        reject(e);
-      }
+      });
     };
 
-    if (Array.isArray(txnHash)) {
-      var promises = [];
-      txnHash.forEach(function(oneTxHash) {
-        promises.push(
-          this.web3.eth.getTransactionReceiptMined(oneTxHash, interval)
-        );
-      });
-      return Promise.all(promises);
+    if (Array.isArray(txHash)) {
+      return Promise.all(
+        txHash.map(singleHash => this.waitForTransaction(singleHash))
+      );
     } else {
-      return new Promise(function(resolve, reject) {
-        transactionReceiptAsync(txnHash, resolve, reject);
+      return new Promise((resolve, reject) => {
+        transactionReceiptAsync(txHash, resolve, reject);
       });
     }
   }
 
+  async printDebugInfo() {
+    console.log("Printing debug info from API object", this);
+    console.log("Contracts:", this.quecoin, this.questionStore);
+    console.log("Account:", this.web3.eth.accounts[0]);
+    console.log("QUE balance:", (await this.getQueBalance()).toString());
+    console.log(
+      "Que authorization:",
+      (await this.getQueAuthorization()).toString()
+    );
+  }
+
   async authorizeQue(number) {
     const decimals = (await this.quecoin.decimals).toNumber();
-    console.log("Asking for authorization of QUE", decimals, number);
-    return await this.quecoin
+    console.log(
+      "Asking for authorization of QUE:",
+      number,
+      "* 10 **",
+      decimals
+    );
+    const txHash = await this.quecoin
       .approveTx(this.questionStore.address, number * 10 ** decimals)
       .send({ from: this.web3.eth.accounts[0] });
+    await this.waitForTransaction(txHash);
   }
 
   async getQueBalance() {
-    return await this.quecoin.balanceOf.call(this.web3.eth.accounts[0]);
+    return await this.quecoin.balanceOf(this.web3.eth.accounts[0]);
   }
 
   async getQueAuthorization() {
@@ -115,7 +137,7 @@ export default class QuestionApi {
     console.log("Got", questionCount, "questions");
     for (let i = 0; i < questionCount; i++) {
       console.log(`Getting question details for #${i}`);
-      const arr = await this.questionStore.getQuestionDetails.call(i);
+      const arr = await this.questionStore.getQuestionDetails(i);
       questions.push(parseQuestionArray(arr));
       const answerCount = (await this.questionStore.getQuestionAnswerCount(
         i
