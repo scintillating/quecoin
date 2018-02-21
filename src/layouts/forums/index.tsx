@@ -19,33 +19,41 @@ class Forums extends Component<
     this.state = { status: "NOT_LOADED", answers: [] };
   }
 
+  async tryLoadData() {
+    if (this.props.web3 === null) {
+      console.log("web3 is null, not loading yet");
+      return;
+    }
+    if (this.state.status === "LOADED") {
+      console.log("Already loaded, not loading contracts");
+      return;
+    }
+
+    console.log("Account:", this.props.web3.eth.accounts[0]);
+
+    const api = new QuestionApi();
+    await api.init(this.props.web3);
+    api.printDebugInfo();
+    const questions = await api.getQuestions();
+    const queAuthorization = await api.getQueAuthorization();
+    if (queAuthorization.toNumber() < 100) {
+      await api.authorizeQue(100);
+    }
+    this.setState({
+      status: "LOADED",
+      questions: questions,
+      api: api
+    });
+  }
+
+  // Run on first render
+  componentDidMount() {
+    this.tryLoadData();
+  }
+
+  // Run on updates to props (e.g. web3)
   componentDidUpdate() {
-    (async () => {
-      if (this.props.web3 === null) {
-        console.log("web3 is null, not loading yet");
-        return;
-      }
-      if (this.state.status === "LOADED") {
-        console.log("Already loaded, not loading contracts");
-        return;
-      }
-
-      console.log("Account:", this.props.web3.eth.accounts[0]);
-
-      const api = new QuestionApi();
-      await api.init(this.props.web3);
-      api.printDebugInfo();
-      const questions = await api.getQuestions();
-      const queAuthorization = await api.getQueAuthorization();
-      if (queAuthorization.toNumber() < 100) {
-        await api.authorizeQue(100);
-      }
-      this.setState({
-        status: "LOADED",
-        questions: questions,
-        api: api
-      });
-    })();
+    this.tryLoadData();
   }
 
   async answer(questionId) {
