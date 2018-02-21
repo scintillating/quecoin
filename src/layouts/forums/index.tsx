@@ -19,26 +19,23 @@ class Forums extends Component<
     this.state = { status: "NOT_LOADED", answers: [] };
   }
 
-  async tryLoadData() {
-    if (this.props.web3 === null) {
-      console.log("web3 is null, not loading yet");
-      return;
-    }
-    if (this.state.status === "LOADED") {
-      console.log("Already loaded, not loading contracts");
-      return;
-    }
-
+  async setup() {
     console.log("Account:", this.props.web3.eth.accounts[0]);
 
     const api = new QuestionApi();
     await api.init(this.props.web3);
     api.printDebugInfo();
-    const questions = await api.getQuestions();
-    const queAuthorization = await api.getQueAuthorization();
-    if (queAuthorization.toNumber() < 100) {
-      await api.authorizeQue(100);
-    }
+    const questions = await this.getQuestions(api);
+
+    const reloadHandler = async (err, res) => {
+      if (err) {
+        throw err;
+      }
+      const questions = await this.getQuestions(api);
+      this.setState({ status: "LOADED", questions, api });
+    };
+    api.watchQuestionAsked(reloadHandler);
+
     this.setState({
       status: "LOADED",
       questions: questions,
@@ -46,14 +43,27 @@ class Forums extends Component<
     });
   }
 
+  async getQuestions(api) {
+    const questions = await api.getQuestions();
+    const queAuthorization = await api.getQueAuthorization();
+    if (queAuthorization.toNumber() < 100) {
+      await api.authorizeQue(100);
+    }
+    return questions;
+  }
+
   // Run on first render
   componentDidMount() {
-    this.tryLoadData();
+    if (this.props.web3 !== null) {
+      this.setup();
+    }
   }
 
   // Run on updates to props (e.g. web3)
   componentDidUpdate() {
-    this.tryLoadData();
+    if (this.state.status !== "LOADED" && this.props.web3 !== null) {
+      this.setup();
+    }
   }
 
   async answer(questionId) {
@@ -61,7 +71,6 @@ class Forums extends Component<
       questionId,
       this.state.answers[questionId]
     );
-    window.location.reload(true);
   }
 
   handleChange(questionId, content) {
@@ -82,7 +91,6 @@ class Forums extends Component<
   async askQuestion() {
     console.log("Adding question", this.state.newQuestion);
     await this.state.api.askQuestion(this.state.newQuestion, "xd");
-    window.location.reload(true);
   }
 
   render() {

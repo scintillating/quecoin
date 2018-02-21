@@ -6,6 +6,7 @@ import { Quecoin } from "../typechain/Quecoin";
 import contract from "truffle-contract";
 import { QuestionStore } from "../typechain/QuestionStore";
 import TxFailedError from "./TxFailedError";
+import { BigNumber } from "bignumber.js";
 
 function parseQuestionArray(arr) {
   return {
@@ -43,8 +44,7 @@ export default class QuestionApi {
     this.questionStore = new QuestionStore(web3, questionStoreAddress);
   }
 
-  waitForTransaction(txHash: string | string[], interval?: number) {
-    interval = interval ? interval : 50;
+  waitForTransaction(txHash: string | string[], interval: number = 500) {
     console.log("Waiting for txn with hash", txHash, "and interval", interval);
     const transactionReceiptAsync = async (txHash, resolve, reject) => {
       console.log("Getting receipt");
@@ -145,7 +145,7 @@ export default class QuestionApi {
       questions[i].answers = [];
       for (let j = 0; j < answerCount; j++) {
         const ansArr = await this.questionStore.getQuestionAnswer(i, j);
-        console.log(ansArr);
+        console.log("Got answer #", j, "for question #", i, ":", ansArr);
         questions[i].answers.push({ answer: ansArr[0], author: ansArr[1] });
       }
     }
@@ -166,6 +166,32 @@ export default class QuestionApi {
       console.error(e);
       return false;
     }
+  }
+
+  watchQuestionAsked(
+    callback: (
+      error: Error,
+      result?: { asker: string; questionId: BigNumber }
+    ) => void
+  ) {
+    const event = this.questionStore.rawWeb3Contract.QuestionAsked(
+      {},
+      { fromBlock: 0 }
+    );
+    console.log(event);
+    event.watch((e, r) => {
+      console.log("Hit QuestionAsked callback with", e, r);
+      if (e) {
+        callback(e, null);
+        return;
+      }
+      callback(e, r.args);
+    });
+    console.log(this.questionStore.rawWeb3Contract.QuestionAsked);
+  }
+
+  stopWatchingQuestionAsked(cb) {
+    this.questionStore.rawWeb3Contract.QuestionAsked().stopWatching(cb);
   }
 
   async finalizeQuestion(questionId, answerId) {}
