@@ -5,13 +5,14 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { initializeContracts, loadQuestions } from "./web3/actions";
+import { setFatalError } from "./error/actions";
 import { createStore, applyMiddleware, compose } from "redux";
 import thunkMiddleware from "redux-thunk";
 import { routerMiddleware } from "react-router-redux";
 import { createHashHistory } from "history";
 import { ConnectedRouter } from "react-router-redux";
 
-import reducer from "./reducer";
+import combinedReducers from "./reducer";
 
 // Layouts
 import App from "./App";
@@ -22,7 +23,7 @@ const composeEnhancers =
   window["__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"] || compose;
 const history = createHashHistory();
 const store = createStore(
-  reducer,
+  combinedReducers,
   composeEnhancers(applyMiddleware(thunkMiddleware, routerMiddleware(history)))
 );
 
@@ -32,8 +33,12 @@ const store = createStore(
     console.log("Quecoin starting up...");
     await store.dispatch(initializeContracts());
     await store.dispatch(loadQuestions());
+    console.log("Contract load complete.");
   } catch (e) {
     console.error("Error in blockchain data load:", e);
+    store.dispatch(
+      setFatalError("While loading data from Ethereum contracts: " + e.message)
+    );
   }
 })();
 
