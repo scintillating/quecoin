@@ -27,7 +27,7 @@ class NewQuestion extends Component<
   }
 }
 export default connect(
-  state => {},
+  state => ({}),
   dispatch =>
     ({
       askQuestion(text: string) {
