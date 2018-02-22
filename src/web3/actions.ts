@@ -2,6 +2,9 @@ import { Dispatch, Action } from "redux";
 import QuestionApi from "../util/QuestionApi";
 import getWeb3 from "../util/getWeb3";
 
+// Where the work happens.
+// Each action is async and kicks off some web3 transaction/call
+
 export const INITIALIZE_CONTRACTS = "INITIALIZE_CONTRACTS";
 export function initializeContracts() {
   return async (dispatch: Dispatch<Action>, getState) => {
