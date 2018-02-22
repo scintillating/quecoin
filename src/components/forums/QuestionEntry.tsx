@@ -1,20 +1,22 @@
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 import Question from "../../data/Question";
 
+interface Props {
+  question: Question;
+  onAddAnswer: (text: string) => void;
+}
+
 export default class QuestionEntry extends Component<
-  {
-    question: Question;
-    onAddAnswer: (text: string) => void;
-  },
+  Props,
   { answerText: string }
 > {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.handleTextChange = this.handleTextChange.bind(this);
     this.onAddAnswerClicked = this.onAddAnswerClicked.bind(this);
   }
 
-  private handleTextChange(e) {
+  private handleTextChange(e: ChangeEvent<HTMLTextAreaElement>) {
     this.setState({ answerText: e.target.value });
   }
   private onAddAnswerClicked() {

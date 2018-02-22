@@ -1,14 +1,32 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
     "baseUrl": "src",
-    "jsx": "react",
-    "lib": ["es2015", "dom"],
-    "module": "es6",
+    "rootDir": "src",
+    "outDir": "build/dist",
+    "module": "esnext",
     "moduleResolution": "node",
-    "removeComments": true,
-    "preserveConstEnums": true,
+    // Required to not break `yarn build` -- uglifyjs does not support es6 so
+    // files have to be compiled down to es5
+    "target": "es5",
+    "lib": ["es6", "dom"],
     "sourceMap": true,
-    "target": "esnext"
-  }
+    "allowJs": true,
+    "jsx": "react",
+    // Some strictness (can't be entirely strict because of typechain files)
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    // Allows stuff like `import React from "react";`
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "src/setupTests.ts"
+  ]
 }

@@ -1,7 +1,5 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React from "react";
 import { Route, Switch } from "react-router";
-import { withRouter } from "react-router-dom";
 
 // UI Components
 import Home from "./components/home";

@@ -1,4 +1,3 @@
 export default class Answer {
-  answer: string;
-  author: string;
+  constructor(public answer: string, public author: string) {}
 }

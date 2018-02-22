@@ -1,7 +1,5 @@
 import React, { Component, ChangeEvent } from "react";
-import { connect, Dispatch } from "react-redux";
-import { Action } from "redux";
-import { withRouter, RouteComponentProps } from "react-router";
+import { connect } from "react-redux";
 import * as actions from "../../web3/actions";
 
 interface NewQuestionDispatchProps {
@@ -12,7 +10,7 @@ class NewQuestion extends Component<
   NewQuestionDispatchProps,
   { questionText: string }
 > {
-  constructor(props) {
+  constructor(props: NewQuestionDispatchProps) {
     super(props);
     this.onTextChange = this.onTextChange.bind(this);
     this.askQuestionClicked = this.askQuestionClicked.bind(this);

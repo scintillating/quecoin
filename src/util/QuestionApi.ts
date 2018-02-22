@@ -192,7 +192,7 @@ export default class QuestionApi {
     event.watch((e, r) => {
       console.log("Hit QuestionAsked callback with", e, r);
       if (e) {
-        callback(e, null);
+        callback(e, undefined);
         return;
       }
       callback(e, r.args);

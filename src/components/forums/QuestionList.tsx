@@ -1,9 +1,7 @@
 import React, { PureComponent } from "react";
-import { Action } from "redux";
-import { connect, Dispatch } from "react-redux";
+import { connect } from "react-redux";
 import Question from "../../data/Question";
 import QuestionEntry from "./QuestionEntry";
-import { withRouter } from "react-router-dom";
 import * as actions from "../../web3/actions";
 
 class QuestionList extends PureComponent<{

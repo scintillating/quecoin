@@ -4,8 +4,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import getWeb3 from "./util/getWeb3";
-import Web3 from "web3";
 import { initializeContracts, loadQuestions } from "./web3/actions";
 import { createStore, applyMiddleware, compose } from "redux";
 import thunkMiddleware from "redux-thunk";
@@ -17,7 +15,6 @@ import reducer from "./reducer";
 
 // Layouts
 import App from "./App";
-import QuestionApi from "./util/QuestionApi";
 
 // Initialize redux store
 // Redux DevTools
