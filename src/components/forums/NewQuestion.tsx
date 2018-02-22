@@ -12,6 +12,12 @@ class NewQuestion extends Component<
   NewQuestionDispatchProps,
   { questionText: string }
 > {
+  constructor(props) {
+    super(props);
+    this.onTextChange = this.onTextChange.bind(this);
+    this.askQuestionClicked = this.askQuestionClicked.bind(this);
+  }
+
   private onTextChange(e: ChangeEvent<HTMLTextAreaElement>) {
     this.setState({ questionText: e.target.value });
   }

@@ -8,6 +8,12 @@ export default class QuestionEntry extends Component<
   },
   { answerText: string }
 > {
+  constructor(props) {
+    super(props);
+    this.handleTextChange = this.handleTextChange.bind(this);
+    this.onAddAnswerClicked = this.onAddAnswerClicked.bind(this);
+  }
+
   private handleTextChange(e) {
     this.setState({ answerText: e.target.value });
   }
