@@ -47,7 +47,10 @@ export default class QuestionApi {
     this.printDebugInfo();
   }
 
-  waitForTransaction(txHash: string | string[], interval: number = 500) {
+  private waitForTransaction(
+    txHash: string | string[],
+    interval: number = 500
+  ) {
     console.log("Waiting for txn with hash", txHash, "and interval", interval);
     const transactionReceiptAsync = async (txHash, resolve, reject) => {
       console.log("Getting receipt");
@@ -83,7 +86,7 @@ export default class QuestionApi {
     }
   }
 
-  async printDebugInfo() {
+  private async printDebugInfo() {
     console.log("Printing debug info from API object", this);
     console.log("Contracts:", this.quecoin, this.questionStore);
     console.log("Account:", this.web3.eth.accounts[0]);
@@ -94,7 +97,7 @@ export default class QuestionApi {
     );
   }
 
-  async authorizeQue(number: number) {
+  public async authorizeQue(number: number) {
     const decimals = (await this.quecoin.decimals).toNumber();
     console.log(
       "Asking for authorization of QUE:",
@@ -108,18 +111,18 @@ export default class QuestionApi {
     await this.waitForTransaction(txHash);
   }
 
-  async getQueBalance() {
+  public async getQueBalance() {
     return await this.quecoin.balanceOf(this.web3.eth.accounts[0]);
   }
 
-  async getQueAuthorization() {
+  public async getQueAuthorization() {
     return await this.quecoin.allowance(
       this.web3.eth.accounts[0],
       this.questionStore.address
     );
   }
 
-  async askQuestion(question: string, description: string) {
+  public async askQuestion(question: string, description: string) {
     try {
       const txHash = await this.questionStore
         .askQuestionTx(question, description)
@@ -133,7 +136,7 @@ export default class QuestionApi {
     }
   }
 
-  async getQuestions(): Promise<Question[]> {
+  public async getQuestions(): Promise<Question[]> {
     let questions: Question[] = [];
     const questionCount = (await this.questionStore
       .getQuestionCount).toNumber();
@@ -157,7 +160,7 @@ export default class QuestionApi {
     return questions;
   }
 
-  async answerQuestion(questionId: number, answer: string) {
+  public async answerQuestion(questionId: number, answer: string) {
     try {
       const txHash = await this.questionStore
         .answerQuestionTx(questionId, answer)
@@ -171,7 +174,7 @@ export default class QuestionApi {
     }
   }
 
-  watchQuestionAsked(
+  public watchQuestionAsked(
     callback: (
       error: Error,
       result?: { asker: string; questionId: BigNumber }
@@ -193,9 +196,9 @@ export default class QuestionApi {
     console.log(this.questionStore.rawWeb3Contract.QuestionAsked);
   }
 
-  stopWatchingQuestionAsked(cb) {
+  public stopWatchingQuestionAsked(cb) {
     this.questionStore.rawWeb3Contract.QuestionAsked().stopWatching(cb);
   }
 
-  async finalizeQuestion(questionId: number, answerId: number) {}
+  public async finalizeQuestion(questionId: number, answerId: number) {}
 }
