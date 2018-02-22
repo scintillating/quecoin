@@ -1,17 +1,23 @@
-import { WEB3_INITIALIZED } from "./actions";
+import { CONTRACTS_INITIALIZED, LOAD_QUESTIONS } from "./actions";
 
 const initialState = {
-  web3: null
+  api: null,
+  questions: null
 };
 
 const reducer = (state = initialState, action) => {
-  if (action.type === WEB3_INITIALIZED) {
-    return Object.assign({}, state, {
-      web3: action.payload
-    });
+  switch (action.type) {
+    case CONTRACTS_INITIALIZED:
+      return Object.assign({}, state, {
+        api: action.payload
+      });
+    case LOAD_QUESTIONS:
+      return Object.assign({}, state, {
+        questions: action.payload
+      });
+    default:
+      return initialState;
   }
-
-  return state;
 };
 
 export default reducer;

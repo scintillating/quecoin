@@ -1,5 +1,6 @@
 ///<reference path="../../node_modules/web3-typescript-typings/index.d.ts"/>
 import Web3 from "web3";
+import QuestionApi from "./QuestionApi";
 
 export default function getWeb3(): Promise<Web3> {
   return new Promise<Web3>((resolve, reject) => {

@@ -4,8 +4,8 @@ import { Route, Switch } from "react-router";
 import { withRouter } from "react-router-dom";
 
 // UI Components
-import Home from "./layouts/home";
-import Forums from "./layouts/forums";
+import Home from "./components/home";
+import Forums from "./components/forums";
 
 // Styles
 import "./css/oswald.css";
