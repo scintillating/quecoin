@@ -1,4 +1,4 @@
-import { CONTRACTS_INITIALIZED, LOAD_QUESTIONS } from "./actions";
+import { INITIALIZE_CONTRACTS, LOAD_QUESTIONS } from "./actions";
 
 const initialState = {
   api: null,
@@ -7,7 +7,7 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case CONTRACTS_INITIALIZED:
+    case INITIALIZE_CONTRACTS:
       return Object.assign({}, state, {
         api: action.payload
       });

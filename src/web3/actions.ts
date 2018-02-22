@@ -1,11 +1,13 @@
 import { Dispatch, Action } from "redux";
 import QuestionApi from "../util/QuestionApi";
+import getWeb3 from "../util/getWeb3";
 
-export const CONTRACTS_INITIALIZED = "WEB3_INITIALIZED";
-export function contractsInitialized(api) {
-  return {
-    type: CONTRACTS_INITIALIZED,
-    payload: api
+export const INITIALIZE_CONTRACTS = "INITIALIZE_CONTRACTS";
+export function initializeContracts() {
+  return async (dispatch: Dispatch<Action>, getState) => {
+    const api = new QuestionApi();
+    await api.init(await getWeb3());
+    dispatch({ type: INITIALIZE_CONTRACTS, payload: api });
   };
 }
 

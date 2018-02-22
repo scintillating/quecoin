@@ -44,6 +44,7 @@ export default class QuestionApi {
     console.log("QuestionStore:", questionStoreAddress);
     this.quecoin = new Quecoin(web3, quecoinAddress);
     this.questionStore = new QuestionStore(web3, questionStoreAddress);
+    this.printDebugInfo();
   }
 
   waitForTransaction(txHash: string | string[], interval: number = 500) {
