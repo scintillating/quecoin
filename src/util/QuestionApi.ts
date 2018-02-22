@@ -8,6 +8,7 @@ import { QuestionStore } from "../typechain/QuestionStore";
 import TxFailedError from "./TxFailedError";
 import { BigNumber } from "bignumber.js";
 import Question from "data/Question";
+import QUE from "../data/QUE";
 
 function parseQuestionArray(arr) {
   return {
@@ -97,28 +98,31 @@ export default class QuestionApi {
     );
   }
 
-  public async authorizeQue(number: number) {
-    const decimals = (await this.quecoin.decimals).toNumber();
+  public async authorizeQue(que: QUE) {
     console.log(
       "Asking for authorization of QUE:",
-      number,
-      "* 10 **",
-      decimals
+      que.amount,
+      ", raw:",
+      que.rawAmount
     );
     const txHash = await this.quecoin
-      .approveTx(this.questionStore.address, number * 10 ** decimals)
+      .approveTx(this.questionStore.address, que.rawAmount)
       .send({ from: this.web3.eth.accounts[0] });
     await this.waitForTransaction(txHash);
   }
 
-  public async getQueBalance() {
-    return await this.quecoin.balanceOf(this.web3.eth.accounts[0]);
+  public async getQueBalance(): Promise<QUE> {
+    return QUE.fromRawAmount(
+      await this.quecoin.balanceOf(this.web3.eth.accounts[0])
+    );
   }
 
-  public async getQueAuthorization() {
-    return await this.quecoin.allowance(
-      this.web3.eth.accounts[0],
-      this.questionStore.address
+  public async getQueAuthorization(): Promise<QUE> {
+    return QUE.fromRawAmount(
+      await this.quecoin.allowance(
+        this.web3.eth.accounts[0],
+        this.questionStore.address
+      )
     );
   }
 
