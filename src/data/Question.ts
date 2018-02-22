@@ -8,4 +8,9 @@ export default class Question {
   desc: string;
   answers: Answer[];
   voteScore: BigNumber;
+  votePool: BigNumber;
+  questionPool: BigNumber;
+  upvotesInVotePool: BigNumber;
+  downvotesInVotePool: BigNumber;
+  finalized: boolean;
 }

@@ -7,9 +7,11 @@ import contract from "truffle-contract";
 import { QuestionStore } from "../typechain/QuestionStore";
 import TxFailedError from "./TxFailedError";
 import { BigNumber } from "bignumber.js";
+import Question from "data/Question";
 
 function parseQuestionArray(arr) {
   return {
+    answers: [],
     question: arr[0],
     desc: arr[1],
     asker: arr[2],
@@ -91,7 +93,7 @@ export default class QuestionApi {
     );
   }
 
-  async authorizeQue(number) {
+  async authorizeQue(number: number) {
     const decimals = (await this.quecoin.decimals).toNumber();
     console.log(
       "Asking for authorization of QUE:",
@@ -116,7 +118,7 @@ export default class QuestionApi {
     );
   }
 
-  async askQuestion(question, description) {
+  async askQuestion(question: string, description: string) {
     try {
       const txHash = await this.questionStore
         .askQuestionTx(question, description)
@@ -130,8 +132,8 @@ export default class QuestionApi {
     }
   }
 
-  async getQuestions() {
-    let questions = [];
+  async getQuestions(): Promise<Question[]> {
+    let questions: Question[] = [];
     const questionCount = (await this.questionStore
       .getQuestionCount).toNumber();
     console.log("Got", questionCount, "questions");
@@ -154,7 +156,7 @@ export default class QuestionApi {
     return questions;
   }
 
-  async answerQuestion(questionId, answer) {
+  async answerQuestion(questionId: number, answer: string) {
     try {
       const txHash = await this.questionStore
         .answerQuestionTx(questionId, answer)
@@ -194,5 +196,5 @@ export default class QuestionApi {
     this.questionStore.rawWeb3Contract.QuestionAsked().stopWatching(cb);
   }
 
-  async finalizeQuestion(questionId, answerId) {}
+  async finalizeQuestion(questionId: number, answerId: number) {}
 }
