@@ -26,14 +26,14 @@ const store = createStore(
   composeEnhancers(applyMiddleware(thunkMiddleware, routerMiddleware(history)))
 );
 
-// Initialize web3 and set in Redux.
+// Start up app with data off the blockchain
 (async () => {
   try {
-    console.log("Contracts initialized!");
+    console.log("Quecoin starting up...");
     await store.dispatch(initializeContracts());
     await store.dispatch(loadQuestions());
   } catch (e) {
-    console.log("Error in web3 initialization.");
+    console.error("Error in blockchain data load:", e);
   }
 })();
 
