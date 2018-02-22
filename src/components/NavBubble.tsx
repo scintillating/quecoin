@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import FontAwesome from "react-fontawesome";
 
 import "font-awesome/css/font-awesome.min.css";
 import $ from "jquery";
@@ -61,17 +62,17 @@ const NavBubble = () => (
   <div className="parent2">
     <Link to="/">
       <div className="test1">
-        <i className="fa fa-home fa-2x" />
+        <FontAwesome name="home" size="2x" />
       </div>
     </Link>
     <Link to="/forums">
       <div className="test2">
-        <i className="fa fa-wpforms fa-2x" />
+        <FontAwesome name="wpforms" size="2x" />
       </div>
     </Link>
     <div className="test3 linkIsWhite">
       <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer">
-        <i className="fa fa-user fa-2x" />
+        <FontAwesome name="user" size="2x" />
       </a>
     </div>
     <div className="test4 linkIsWhite">
@@ -80,11 +81,11 @@ const NavBubble = () => (
         target="_blank"
         rel="noopener noreferrer"
       >
-        <i className="fa fa-file fa-2x" />
+        <FontAwesome name="file" size="2x" />
       </a>
     </div>
     <div className="mask2">
-      <i className="fa fa-home fa-3x" />
+      <FontAwesome name="home" size="3x" />
     </div>
   </div>
 );
