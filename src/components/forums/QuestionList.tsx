@@ -8,7 +8,7 @@ import * as actions from "../../web3/actions";
 
 class QuestionList extends PureComponent<{
   questions: Question[];
-  dispatch: Dispatch<Action>;
+  onAddAnswer: (text: string) => void;
 }> {
   render() {
     if (this.props.questions === null) {
@@ -20,9 +20,7 @@ class QuestionList extends PureComponent<{
             <li key={index}>
               <QuestionEntry
                 question={question}
-                onAddAnswer={text =>
-                  this.props.dispatch(actions.answerQuestion(index, text))
-                }
+                onAddAnswer={this.props.onAddAnswer}
               />
             </li>
           ))}
@@ -31,8 +29,13 @@ class QuestionList extends PureComponent<{
     }
   }
 }
-export default withRouter(
-  connect((state: any, ownProps) => ({ questions: state.web3.questions }))(
-    QuestionList
-  )
-);
+export default connect(
+  (state: any, ownProps) => ({
+    questions: state.web3.questions
+  }),
+  dispatch => ({
+    onAddAnswer: (text: string) => {
+      dispatch(actions.answerQuestion(text, ""));
+    }
+  })
+)(QuestionList);

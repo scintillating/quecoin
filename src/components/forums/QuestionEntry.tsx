@@ -8,8 +8,11 @@ export default class QuestionEntry extends Component<
   },
   { answerText: string }
 > {
-  handleChange(text) {
-    this.setState({ answerText: text });
+  private handleTextChange(e) {
+    this.setState({ answerText: e.target.value });
+  }
+  private onAddAnswerClicked() {
+    this.props.onAddAnswer(this.state.answerText);
   }
   render() {
     return (
@@ -26,12 +29,10 @@ export default class QuestionEntry extends Component<
         </p>
         <ul>{this.props.question.answers.map((a, j) => <li key={j} />)}</ul>
         <p>
-          <textarea onChange={e => this.handleChange(e.target.value)} />
+          <textarea onChange={this.handleTextChange} />
         </p>
         <p>
-          <button onClick={() => this.props.onAddAnswer(this.state.answerText)}>
-            Add answer
-          </button>
+          <button onClick={this.onAddAnswerClicked}>Add answer</button>
         </p>
       </div>
     );

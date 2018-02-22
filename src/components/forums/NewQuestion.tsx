@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, ChangeEvent } from "react";
 import { connect, Dispatch } from "react-redux";
 import { Action } from "redux";
 import { withRouter, RouteComponentProps } from "react-router";
@@ -12,16 +12,17 @@ class NewQuestion extends Component<
   NewQuestionDispatchProps,
   { questionText: string }
 > {
-  onTextChange(text) {
-    this.setState({ questionText: text });
+  private onTextChange(e: ChangeEvent<HTMLTextAreaElement>) {
+    this.setState({ questionText: e.target.value });
+  }
+  private askQuestionClicked() {
+    this.props.askQuestion(this.state.questionText);
   }
   render() {
     return (
       <div>
-        <textarea onChange={e => this.onTextChange(e.target.value)} />
-        <button onClick={() => this.props.askQuestion(this.state.questionText)}>
-          Ask Question
-        </button>
+        <textarea onChange={this.onTextChange} />
+        <button onClick={this.askQuestionClicked}>Ask Question</button>
       </div>
     );
   }
