@@ -6,6 +6,7 @@ import { withRouter } from "react-router-dom";
 // UI Components
 import Home from "./components/home";
 import Forums from "./components/forums";
+import NavBar from "./components/NavBar";
 
 // Styles
 import "./css/oswald.css";
@@ -72,10 +73,15 @@ setInterval(() => {
 }, 100);
 
 const App = () => (
-  <Switch>
-    <Route path="/" exact={true} component={Home} />
-    <Route path="/forums" component={Forums} />
-  </Switch>
+  <>
+    <NavBar />
+    <main className="container">
+      <Switch>
+        <Route path="/" exact={true} component={Home} />
+        <Route path="/forums" component={Forums} />
+      </Switch>
+    </main>
+  </>
 );
 
 export default App;
