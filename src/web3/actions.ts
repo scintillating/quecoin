@@ -83,3 +83,9 @@ export function askQuestion(text) {
     await api.askQuestion(text, "");
   });
 }
+
+export function finalizeQuestion(question: Question, answerId: number) {
+  return withApi(async (dispatch, api) => {
+    await api.finalizeQuestion(question, answerId);
+  });
+}

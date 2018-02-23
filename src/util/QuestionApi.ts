@@ -213,5 +213,13 @@ export default class QuestionApi {
     await this.watchEvent(this.quecoin.rawWeb3Contract.Approval, callback);
   }
 
-  public async finalizeQuestion(question: Question, answerId: number) {}
+  public async finalizeQuestion(question: Question, answerId: number) {
+    if (!await this.questionStore.getQuestionFinalizable(question.id)) {
+      throw new Error("Question is not yet finalizable");
+    }
+    const txHash = await this.questionStore
+      .acceptAnswerAndFinalizeTx(question.id, answerId)
+      .send({ from: this.web3.eth.accounts[0] });
+    await this.waitForTransaction(txHash);
+  }
 }

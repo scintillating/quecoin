@@ -191,6 +191,11 @@ contract QuestionStore is Ownable, Pausable {
         return (answer.answer, answer.author);
     }
 
+    function getQuestionFinalizable(uint _questionId) external view returns (bool) {
+        Question storage q = questions[_questionId];
+        return _isQuestionFinalizable(q);
+    }
+
     function getVote(uint _questionId) external view returns (int) {
         return userToQuestionVote[msg.sender][_questionId];
     }
