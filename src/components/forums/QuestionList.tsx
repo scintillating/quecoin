@@ -3,10 +3,13 @@ import { connect } from "react-redux";
 import Question from "../../data/Question";
 import QuestionEntry from "./QuestionEntry";
 import * as actions from "../../web3/actions";
+import QUE from "../../data/QUE";
 
 class QuestionList extends PureComponent<{
   questions: Question[];
-  onAddAnswer: (text: string) => void;
+  onAddAnswer: (questionId: number, text: string) => void;
+  onUpvote: (questionId, amount: QUE) => void;
+  onDownvote: (questionId, amount: QUE) => void;
 }> {
   render() {
     if (this.props.questions === null) {
@@ -18,7 +21,11 @@ class QuestionList extends PureComponent<{
             <li key={question.id}>
               <QuestionEntry
                 question={question}
-                onAddAnswer={this.props.onAddAnswer}
+                onAddAnswer={text => this.props.onAddAnswer(question.id, text)}
+                onUpvote={amount => this.props.onUpvote(question.id, amount)}
+                onDownvote={amount =>
+                  this.props.onDownvote(question.id, amount)
+                }
               />
             </li>
           ))}
@@ -32,8 +39,14 @@ export default connect(
     questions: state.web3.questions
   }),
   dispatch => ({
-    onAddAnswer: (text: string) => {
-      dispatch(actions.answerQuestion(text, ""));
+    onAddAnswer: (questionId: number, text: string) => {
+      dispatch(actions.answerQuestion(questionId, text));
+    },
+    onUpvote: (questionId, amount) => {
+      dispatch(actions.upvote(questionId, amount));
+    },
+    onDownvote: (questionId, amount) => {
+      dispatch(actions.downvote(questionId, amount));
     }
   })
 )(QuestionList);
