@@ -180,12 +180,11 @@ export default class QuestionApi {
   }
 
   private async watchEvent(eventMethod, callback) {
-    const event = eventMethod(
-      {},
-      { fromBlock: (await tp.promisify(this.web3.eth.getBlockNumber)()) + 1 }
-    );
+    const event = eventMethod({}, {});
     event.watch((e, r) => {
+      console.log("Hit event", event, e, r);
       if (e) {
+        console.error("Event error", e);
         callback(e);
       } else {
         callback(e, r.args);
