@@ -30,7 +30,7 @@ export function initializeContracts() {
 export const LOAD_QUESTIONS = "LOAD_QUESTIONS";
 export function loadQuestions() {
   return withApi(async (dispatch, api) =>
-    dispatch({ type: LOAD_QUESTIONS, payload: await api.getQuestions() })
+    dispatch({ type: LOAD_QUESTIONS, payload: await api.getNewQuestions() })
   );
 }
 

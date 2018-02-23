@@ -135,12 +135,16 @@ export default class QuestionApi {
     await this.waitForTransaction(txHash);
   }
 
-  public async getQuestions(): Promise<Question[]> {
+  public async getNewQuestions(
+    upTo: number = Infinity,
+    from: number = 0
+  ): Promise<Question[]> {
     let questions: Question[] = [];
     const questionCount = (await this.questionStore
       .getQuestionCount).toNumber();
     console.log("Got", questionCount, "questions");
-    for (let i = 0; i < questionCount; i++) {
+    console.log("Getting questions from", from, "up to", upTo);
+    for (let i = Math.min(questionCount - 1); i >= 0; i--) {
       console.log(`Getting question details for #${i}`);
       const arr = await this.questionStore.getQuestionDetails(i);
       questions.push({
