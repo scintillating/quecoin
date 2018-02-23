@@ -12,44 +12,44 @@ setInterval(() => {
   var active3 = false;
   var active4 = false;
 
-  $(".parent2").on("mousedown touchstart", function() {
+  $(".NavBubble").on("mousedown touchstart", function() {
     if (!active1)
       $(this)
-        .find(".test1")
+        .find(".NavBubble__bubble1")
         .css({ "background-color": "gray", transform: "translate(0px,125px)" });
     else
       $(this)
-        .find(".test1")
+        .find(".NavBubble__bubble1")
         .css({ "background-color": "dimGray", transform: "none" });
     if (!active2)
       $(this)
-        .find(".test2")
+        .find(".NavBubble__bubble2")
         .css({
           "background-color": "gray",
           transform: "translate(60px,105px)"
         });
     else
       $(this)
-        .find(".test2")
+        .find(".NavBubble__bubble2")
         .css({ "background-color": "darkGray", transform: "none" });
     if (!active3)
       $(this)
-        .find(".test3")
+        .find(".NavBubble__bubble3")
         .css({
           "background-color": "gray",
           transform: "translate(105px,60px)"
         });
     else
       $(this)
-        .find(".test3")
+        .find(".NavBubble__bubble3")
         .css({ "background-color": "silver", transform: "none" });
     if (!active4)
       $(this)
-        .find(".test4")
+        .find(".NavBubble__bubble4")
         .css({ "background-color": "gray", transform: "translate(125px,0px)" });
     else
       $(this)
-        .find(".test4")
+        .find(".NavBubble__bubble4")
         .css({ "background-color": "silver", transform: "none" });
     active1 = !active1;
     active2 = !active2;
@@ -59,23 +59,23 @@ setInterval(() => {
 }, 100);
 
 const NavBubble = () => (
-  <div className="parent2">
+  <div className="NavBubble">
     <Link to="/">
-      <div className="test1">
+      <div className="NavBubble__bubble1">
         <FontAwesome name="home" size="2x" />
       </div>
     </Link>
     <Link to="/forums">
-      <div className="test2">
+      <div className="NavBubble__bubble2">
         <FontAwesome name="wpforms" size="2x" />
       </div>
     </Link>
-    <div className="test3 linkIsWhite">
+    <div className="NavBubble__bubble3 linkIsWhite">
       <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer">
         <FontAwesome name="user" size="2x" />
       </a>
     </div>
-    <div className="test4 linkIsWhite">
+    <div className="NavBubble__bubble4 linkIsWhite">
       <a
         href="https://docs.google.com/document/d/1SUYIcKfctowjjmqOM4c3Bq4D337DjCJDVFs9w4ppKbg/edit"
         target="_blank"
@@ -84,7 +84,7 @@ const NavBubble = () => (
         <FontAwesome name="file" size="2x" />
       </a>
     </div>
-    <div className="mask2">
+    <div className="NavBubble__bubble-home">
       <FontAwesome name="home" size="3x" />
     </div>
   </div>
