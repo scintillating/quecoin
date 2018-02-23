@@ -147,30 +147,31 @@ export default class QuestionApi {
     for (let i = Math.min(questionCount - 1); i >= 0; i--) {
       console.log(`Getting question details for #${i}`);
       const arr = await this.questionStore.getQuestionDetails(i);
-      questions.push({
-        id: i,
-        answers: [],
-        question: arr[0],
-        desc: arr[1],
-        asker: arr[2],
-        created: new Date(arr[3].toNumber() * 1000),
-        votePool: arr[4],
-        questionPool: arr[5],
-        voteScore: arr[6],
-        upvotesInVotePool: arr[7],
-        downvotesInVotePool: arr[8],
-        finalized: arr[9],
-        isFinalizableByUser:
-          (await this.questionStore.getQuestionFinalizable(i)) &&
-          arr[2] === this.web3.eth.accounts[0]
-      });
+      const index =
+        questions.push({
+          id: i,
+          answers: [],
+          question: arr[0],
+          desc: arr[1],
+          asker: arr[2],
+          created: new Date(arr[3].toNumber() * 1000),
+          votePool: arr[4],
+          questionPool: arr[5],
+          voteScore: arr[6],
+          upvotesInVotePool: arr[7],
+          downvotesInVotePool: arr[8],
+          finalized: arr[9],
+          isFinalizableByUser:
+            (await this.questionStore.getQuestionFinalizable(i)) &&
+            arr[2] === this.web3.eth.accounts[0]
+        }) - 1;
       const answerCount = (await this.questionStore.getQuestionAnswerCount(
         i
       )).toNumber();
       for (let j = 0; j < answerCount; j++) {
         const ansArr = await this.questionStore.getQuestionAnswer(i, j);
         console.log("Got answer #", j, "for question #", i, ":", ansArr);
-        questions[i].answers.push({ answer: ansArr[0], author: ansArr[1] });
+        questions[index].answers.push({ answer: ansArr[0], author: ansArr[1] });
       }
     }
     console.log("Got all questions");
@@ -237,12 +238,9 @@ export default class QuestionApi {
     await this.watchEvent(this.questionStore.rawWeb3Contract.Voted, callback);
   }
 
-  public async finalizeQuestion(question: Question, answerId: number) {
-    if (!question.isFinalizableByUser) {
-      throw new Error("Question is not yet finalizable");
-    }
+  public async finalizeQuestion(questionId: number, answerId: number) {
     const txHash = await this.questionStore
-      .acceptAnswerAndFinalizeTx(question.id, answerId)
+      .acceptAnswerAndFinalizeTx(questionId, answerId)
       .send({ from: this.web3.eth.accounts[0] });
     await this.waitForTransaction(txHash);
   }

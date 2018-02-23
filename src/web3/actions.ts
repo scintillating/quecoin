@@ -100,8 +100,8 @@ export function downvote(questionId, amount: QUE) {
   });
 }
 
-export function finalizeQuestion(question: Question, answerId: number) {
+export function finalizeQuestion(questionId: number, answerId: number) {
   return withApi(async (dispatch, api) => {
-    await api.finalizeQuestion(question, answerId);
+    await api.finalizeQuestion(questionId, answerId);
   });
 }

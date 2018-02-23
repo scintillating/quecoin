@@ -10,6 +10,7 @@ class QuestionList extends PureComponent<{
   onAddAnswer: (questionId: number, text: string) => void;
   onUpvote: (questionId, amount: QUE) => void;
   onDownvote: (questionId, amount: QUE) => void;
+  onFinalize: (questionId, answerId) => void;
 }> {
   render() {
     if (this.props.questions === null) {
@@ -25,6 +26,9 @@ class QuestionList extends PureComponent<{
                 onUpvote={amount => this.props.onUpvote(question.id, amount)}
                 onDownvote={amount =>
                   this.props.onDownvote(question.id, amount)
+                }
+                onFinalize={answerId =>
+                  this.props.onFinalize(question.id, answerId)
                 }
               />
             </li>
@@ -47,6 +51,9 @@ export default connect(
     },
     onDownvote: (questionId, amount) => {
       dispatch(actions.downvote(questionId, amount));
+    },
+    onFinalize: (questionId, answerId) => {
+      dispatch(actions.finalizeQuestion(questionId, answerId));
     }
   })
 )(QuestionList);

@@ -7,6 +7,7 @@ interface Props {
   onUpvote: (amount) => void;
   onDownvote: (amount) => void;
   onAddAnswer: (text: string) => void;
+  onFinalize: (answerId: number) => void;
 }
 
 export default class QuestionEntry extends Component<
@@ -46,13 +47,26 @@ export default class QuestionEntry extends Component<
             </em>
           </small>
         </p>
-        <ul>{this.props.question.answers.map((a, j) => <li key={j} />)}</ul>
+        <ul>
+          {this.props.question.answers.map((a, j) => (
+            <li key={j}>
+              {a.answer} by {a.author}{" "}
+              {(this.props.question.isFinalizableByUser && (
+                <>
+                  Is finalizable.{" "}
+                  <button onClick={() => this.props.onFinalize(j)} />
+                </>
+              )) || <>Is not finalizable.</>}
+            </li>
+          ))}
+        </ul>
         <p>
           <textarea onChange={this.handleTextChange} />
         </p>
         <p>
           <button onClick={this.onAddAnswerClicked}>Add answer</button>
         </p>
+        <p />
       </div>
     );
   }
