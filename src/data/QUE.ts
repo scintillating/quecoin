@@ -11,11 +11,13 @@ export default class QUE {
     this.rawAmount = amount.times(10 ** QUE.DECIMALS);
   }
 
-  public static fromRawAmount(rawAmount: BigNumber) {
+  public static fromRawAmount(rawAmount: BigNumber | number) {
+    rawAmount = new BigNumber(rawAmount);
     return new QUE(rawAmount.div(10 ** QUE.DECIMALS));
   }
 
-  public static fromAmount(amount: BigNumber) {
+  public static fromAmount(amount: BigNumber | number) {
+    amount = new BigNumber(amount);
     return new QUE(amount);
   }
   public toString() {

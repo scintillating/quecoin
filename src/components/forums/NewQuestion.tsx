@@ -1,6 +1,6 @@
 import React, { Component, ChangeEvent } from "react";
 import { connect } from "react-redux";
-import * as actions from "../../web3/actions";
+import { askQuestion } from "../../web3/actions";
 
 interface NewQuestionDispatchProps {
   askQuestion: (text: string) => void;
@@ -12,6 +12,7 @@ class NewQuestion extends Component<
 > {
   constructor(props: NewQuestionDispatchProps) {
     super(props);
+    this.state = { questionText: "" };
     this.onTextChange = this.onTextChange.bind(this);
     this.askQuestionClicked = this.askQuestionClicked.bind(this);
   }
@@ -24,10 +25,10 @@ class NewQuestion extends Component<
   }
   render() {
     return (
-      <div>
-        <textarea onChange={this.onTextChange} />
+      <form>
+        <textarea onChange={this.onTextChange} required={true} />
         <button onClick={this.askQuestionClicked}>Ask Question</button>
-      </div>
+      </form>
     );
   }
 }
@@ -36,7 +37,7 @@ export default connect(
   dispatch =>
     ({
       askQuestion(text: string) {
-        dispatch(actions.askQuestion(text));
+        dispatch(askQuestion(text));
       }
     } as NewQuestionDispatchProps)
 )(NewQuestion);

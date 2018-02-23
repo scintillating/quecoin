@@ -30,7 +30,7 @@ export function initializeContracts() {
 export const LOAD_QUESTIONS = "LOAD_QUESTIONS";
 export function loadQuestions() {
   return withApi(async (dispatch, api) =>
-    dispatch({ type: LOAD_QUESTIONS, payload: await api.getQuestions() })
+    dispatch({ type: LOAD_QUESTIONS, payload: await api.getNewQuestions() })
   );
 }
 
@@ -49,13 +49,16 @@ export function loadQueBalances() {
 
 export function watchForChainEvents() {
   return withApi(async (dispatch, api) => {
-    api.watchQuestionAsked((err, res) => {
+    const loadQuestionsCallback = (err, res) => {
       if (err) {
         dispatch(setFatalError(err.message));
       } else {
         dispatch(loadQuestions());
       }
-    });
+    };
+
+    api.watchQuestionAsked(loadQuestionsCallback);
+    api.watchVote(loadQuestionsCallback);
     api.watchQueAuthorization((err, res) => {
       if (err) {
         dispatch(setFatalError(err.message));
@@ -81,5 +84,24 @@ export function answerQuestion(questionId, answer) {
 export function askQuestion(text) {
   return withApi(async (dispatch, api) => {
     await api.askQuestion(text, "");
+  });
+}
+
+export function upvote(questionId, amount: QUE) {
+  return withApi(async (dispatch, api) => {
+    await api.vote(questionId, amount);
+  });
+}
+
+export function downvote(questionId, amount: QUE) {
+  return withApi(async (dispatch, api) => {
+    // meme
+    await api.vote(questionId, QUE.fromRawAmount(amount.rawAmount.neg()));
+  });
+}
+
+export function finalizeQuestion(questionId: number, answerId: number) {
+  return withApi(async (dispatch, api) => {
+    await api.finalizeQuestion(questionId, answerId);
   });
 }

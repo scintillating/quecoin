@@ -17,3 +17,7 @@ p {
   width: 200px;
   height: auto;
 }
+
+.wrapWord{
+  overflow-wrap: break-word;
+}

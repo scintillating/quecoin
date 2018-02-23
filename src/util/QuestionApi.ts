@@ -128,36 +128,50 @@ export default class QuestionApi {
   }
 
   public async askQuestion(question: string, description: string) {
-    try {
-      const txHash = await this.questionStore
-        .askQuestionTx(question, description)
-        .send({ from: this.web3.eth.accounts[0] });
-      console.log("waiting for transaction to be mined");
-      await this.waitForTransaction(txHash);
-      return true;
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
+    const txHash = await this.questionStore
+      .askQuestionTx(question, description)
+      .send({ from: this.web3.eth.accounts[0] });
+    console.log("waiting for transaction to be mined");
+    await this.waitForTransaction(txHash);
   }
 
-  public async getQuestions(): Promise<Question[]> {
+  public async getNewQuestions(
+    upTo: number = Infinity,
+    from: number = 0
+  ): Promise<Question[]> {
     let questions: Question[] = [];
     const questionCount = (await this.questionStore
       .getQuestionCount).toNumber();
     console.log("Got", questionCount, "questions");
-    for (let i = 0; i < questionCount; i++) {
+    console.log("Getting questions from", from, "up to", upTo);
+    for (let i = Math.min(questionCount - 1); i >= 0; i--) {
       console.log(`Getting question details for #${i}`);
       const arr = await this.questionStore.getQuestionDetails(i);
-      questions.push(parseQuestionArray(arr));
+      const index =
+        questions.push({
+          id: i,
+          answers: [],
+          question: arr[0],
+          desc: arr[1],
+          asker: arr[2],
+          created: new Date(arr[3].toNumber() * 1000),
+          votePool: QUE.fromRawAmount(arr[4]),
+          questionPool: QUE.fromRawAmount(arr[5]),
+          voteScore: QUE.fromRawAmount(arr[6]),
+          upvotesInVotePool: QUE.fromRawAmount(arr[7]),
+          downvotesInVotePool: QUE.fromRawAmount(arr[8]),
+          finalized: arr[9],
+          isFinalizableByUser:
+            (await this.questionStore.getQuestionFinalizable(i)) &&
+            arr[2] === this.web3.eth.accounts[0]
+        }) - 1;
       const answerCount = (await this.questionStore.getQuestionAnswerCount(
         i
       )).toNumber();
-      questions[i].answers = [];
       for (let j = 0; j < answerCount; j++) {
         const ansArr = await this.questionStore.getQuestionAnswer(i, j);
         console.log("Got answer #", j, "for question #", i, ":", ansArr);
-        questions[i].answers.push({ answer: ansArr[0], author: ansArr[1] });
+        questions[index].answers.push({ answer: ansArr[0], author: ansArr[1] });
       }
     }
     console.log("Got all questions");
@@ -166,17 +180,19 @@ export default class QuestionApi {
   }
 
   public async answerQuestion(questionId: number, answer: string) {
-    try {
-      const txHash = await this.questionStore
-        .answerQuestionTx(questionId, answer)
-        .send({ from: this.web3.eth.accounts[0] });
-      console.log("waiting for transaction to be mined");
-      await this.waitForTransaction(txHash);
-      return true;
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
+    const txHash = await this.questionStore
+      .answerQuestionTx(questionId, answer)
+      .send({ from: this.web3.eth.accounts[0] });
+    console.log("waiting for transaction to be mined");
+    await this.waitForTransaction(txHash);
+  }
+
+  public async vote(questionId: number, amount: QUE) {
+    const txHash = await this.questionStore
+      .voteTx(questionId, amount.rawAmount)
+      .send({ from: this.web3.eth.accounts[0] });
+    console.log("waiting for transaction to be mined");
+    await this.waitForTransaction(txHash);
   }
 
   private async watchEvent(eventMethod, callback) {
@@ -213,5 +229,19 @@ export default class QuestionApi {
     await this.watchEvent(this.quecoin.rawWeb3Contract.Approval, callback);
   }
 
-  public async finalizeQuestion(questionId: number, answerId: number) {}
+  public async watchVote(
+    callback: (
+      error: Error,
+      result?: { voter: string; questionId: BigNumber }
+    ) => void
+  ) {
+    await this.watchEvent(this.questionStore.rawWeb3Contract.Voted, callback);
+  }
+
+  public async finalizeQuestion(questionId: number, answerId: number) {
+    const txHash = await this.questionStore
+      .acceptAnswerAndFinalizeTx(questionId, answerId)
+      .send({ from: this.web3.eth.accounts[0] });
+    await this.waitForTransaction(txHash);
+  }
 }
