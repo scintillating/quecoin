@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import QuecoinLogo from "../../images/quecoin-logo.png";
+import { Link } from "react-router-dom";
 
+import QuecoinLogo from "../../images/quecoin-logo.png";
 import BgUser from "../../images/bg_user.png";
 import BgHome from "../../images/bg_home.png";
 import BgShop from "../../images/bg_shop.png";
@@ -34,7 +35,7 @@ class Home extends Component {
               height="199"
               className="circle"
             />
-            <a href="#" className="icon" />
+            <Link to="/forums" className="icon" />
             <h2>Forums</h2>
           </div>
           <div className="item shop">
