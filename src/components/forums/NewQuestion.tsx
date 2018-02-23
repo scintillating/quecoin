@@ -1,6 +1,6 @@
 import React, { Component, ChangeEvent } from "react";
 import { connect } from "react-redux";
-import * as actions from "../../web3/actions";
+import { askQuestion } from "../../web3/actions";
 
 interface NewQuestionDispatchProps {
   askQuestion: (text: string) => void;
@@ -37,7 +37,7 @@ export default connect(
   dispatch =>
     ({
       askQuestion(text: string) {
-        dispatch(actions.askQuestion(text));
+        dispatch(askQuestion(text));
       }
     } as NewQuestionDispatchProps)
 )(NewQuestion);
