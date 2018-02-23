@@ -1,6 +1,10 @@
 import { Dispatch, Action } from "redux";
 import QuestionApi from "../util/QuestionApi";
 import getWeb3 from "../util/getWeb3";
+import { setFatalError } from "../error/actions";
+import Question from "../data/Question";
+import QUE from "../data/QUE";
+import { BigNumber } from "bignumber.js";
 
 // Where the work happens.
 // Each action is async and kicks off some web3 transaction/call
@@ -19,6 +23,26 @@ export function loadQuestions() {
   return async (dispatch: Dispatch<Action>, getState) => {
     const api: QuestionApi = getState().web3.api;
     dispatch({ type: LOAD_QUESTIONS, payload: await api.getQuestions() });
+  };
+}
+
+export function watchForChainEvents() {
+  return async (dispatch: Dispatch<Action>, getState) => {
+    const api: QuestionApi = getState().web3.api;
+    api.watchQuestionAsked((err, res) => {
+      if (err) {
+        dispatch(setFatalError(err.message));
+      } else {
+        dispatch(loadQuestions());
+      }
+    });
+  };
+}
+
+export function authorizeQue(amount) {
+  return async (dispatch: Dispatch<Action>, getState) => {
+    const api: QuestionApi = getState().web3.api;
+    await api.authorizeQue(QUE.fromAmount(new BigNumber(amount)));
   };
 }
 

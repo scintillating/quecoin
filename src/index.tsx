@@ -4,7 +4,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { initializeContracts, loadQuestions } from "./web3/actions";
+import {
+  initializeContracts,
+  loadQuestions,
+  watchForChainEvents,
+  authorizeQue
+} from "./web3/actions";
 import { setFatalError } from "./error/actions";
 import { createStore, applyMiddleware, compose } from "redux";
 import thunkMiddleware from "redux-thunk";
@@ -32,7 +37,9 @@ const store = createStore(
   try {
     console.log("Quecoin starting up...");
     await store.dispatch(initializeContracts());
+    await store.dispatch(authorizeQue(100));
     await store.dispatch(loadQuestions());
+    await store.dispatch(watchForChainEvents());
     console.log("Contract load complete.");
   } catch (e) {
     console.error("Error in blockchain data load:", e);
