@@ -1,10 +1,5 @@
 /* Trying to make this aesthetically pleasing */
 
-body {
-  background: url(https://i.imgur.com/hffM7u4.gif) no-repeat center center fixed;
-  background-size: cover;
-}
-
 p {
   color: white;
 }
@@ -18,6 +13,6 @@ p {
   height: auto;
 }
 
-.wrapWord{
+.wrapWord {
   overflow-wrap: break-word;
 }

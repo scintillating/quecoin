@@ -6,7 +6,6 @@ import { withRouter } from "react-router-dom";
 // UI Components
 import Home from "./components/home";
 import Forums from "./components/forums";
-import SiteHeader from "./components/SiteHeader";
 import ErrorBox from "./components/ErrorBox";
 
 // Styles
@@ -35,12 +34,7 @@ const App = (props: StateProps) => {
     );
   }
 
-  return (
-    <>
-      <SiteHeader />
-      <main className="container">{content}</main>
-    </>
-  );
+  return content;
 };
 
 export default withRouter(connect(

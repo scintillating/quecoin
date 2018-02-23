@@ -4,21 +4,25 @@ import QuestionList from "./QuestionList";
 import NewQuestion from "./NewQuestion";
 import QUE from "../../data/QUE";
 import QueAuthorizationDialog from "./QueAuthorizationDialog";
+import SiteHeader from "./SiteHeader";
 
 const Forums = (props: { authorization: QUE }) => {
   if (props.authorization && props.authorization.amount.toNumber() < 100) {
     return <QueAuthorizationDialog />;
   } else {
     return (
-      <div className="pure-g">
-        <div className="pure-u-1-1 jumbotron text-light bg-dark">
-          <h1>Forums</h1>
-          <h2>Ask a Question</h2>
-          <NewQuestion />
-          <h2>Existing Questions</h2>
-          <QuestionList />
+      <>
+        <SiteHeader />
+        <div className="pure-g">
+          <div className="pure-u-1-1 jumbotron text-light bg-dark">
+            <h1>Forums</h1>
+            <h2>Ask a Question</h2>
+            <NewQuestion />
+            <h2>Existing Questions</h2>
+            <QuestionList />
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 };
