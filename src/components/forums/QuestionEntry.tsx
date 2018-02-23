@@ -46,7 +46,7 @@ export default class QuestionEntry extends Component<
       // {a.answer} by {a.author}{" "}
       <div className="row">
         <div className="col-1">
-          <p>{this.props.question.votePool.toString()}</p>
+          <p>{this.props.question.votePool.amount.toString()} QUE</p>
         </div>
         <div className="col-5">
           <p>{this.props.question.question}</p>
