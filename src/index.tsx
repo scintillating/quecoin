@@ -17,6 +17,7 @@ import thunkMiddleware from "redux-thunk";
 import { routerMiddleware } from "react-router-redux";
 import { createHashHistory } from "history";
 import { ConnectedRouter } from "react-router-redux";
+import { createLogger } from "redux-logger";
 
 import combinedReducers from "./reducer";
 
@@ -28,9 +29,12 @@ import App from "./App";
 const composeEnhancers =
   window["__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"] || compose;
 const history = createHashHistory();
+const logger = createLogger();
 const store = createStore(
   combinedReducers,
-  composeEnhancers(applyMiddleware(thunkMiddleware, routerMiddleware(history)))
+  composeEnhancers(
+    applyMiddleware(thunkMiddleware, routerMiddleware(history), logger)
+  )
 );
 
 // Start up app with data off the blockchain
