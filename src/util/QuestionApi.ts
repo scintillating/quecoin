@@ -128,17 +128,11 @@ export default class QuestionApi {
   }
 
   public async askQuestion(question: string, description: string) {
-    try {
-      const txHash = await this.questionStore
-        .askQuestionTx(question, description)
-        .send({ from: this.web3.eth.accounts[0] });
-      console.log("waiting for transaction to be mined");
-      await this.waitForTransaction(txHash);
-      return true;
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
+    const txHash = await this.questionStore
+      .askQuestionTx(question, description)
+      .send({ from: this.web3.eth.accounts[0] });
+    console.log("waiting for transaction to be mined");
+    await this.waitForTransaction(txHash);
   }
 
   public async getQuestions(): Promise<Question[]> {
@@ -178,17 +172,11 @@ export default class QuestionApi {
   }
 
   public async answerQuestion(questionId: number, answer: string) {
-    try {
-      const txHash = await this.questionStore
-        .answerQuestionTx(questionId, answer)
-        .send({ from: this.web3.eth.accounts[0] });
-      console.log("waiting for transaction to be mined");
-      await this.waitForTransaction(txHash);
-      return true;
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
+    const txHash = await this.questionStore
+      .answerQuestionTx(questionId, answer)
+      .send({ from: this.web3.eth.accounts[0] });
+    console.log("waiting for transaction to be mined");
+    await this.waitForTransaction(txHash);
   }
 
   private async watchEvent(eventMethod, callback) {
