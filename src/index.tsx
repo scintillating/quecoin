@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import {
   initializeContracts,
   loadQuestions,
+  loadQueBalances,
   watchForChainEvents,
   authorizeQue
 } from "./web3/actions";
@@ -37,8 +38,10 @@ const store = createStore(
   try {
     console.log("Quecoin starting up...");
     await store.dispatch(initializeContracts());
-    await store.dispatch(authorizeQue(100));
-    await store.dispatch(loadQuestions());
+    await Promise.all([
+      store.dispatch(loadQuestions()),
+      store.dispatch(loadQueBalances())
+    ]);
     await store.dispatch(watchForChainEvents());
     console.log("Contract load complete.");
   } catch (e) {

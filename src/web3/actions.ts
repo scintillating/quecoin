@@ -26,6 +26,20 @@ export function loadQuestions() {
   };
 }
 
+export const LOAD_QUE_BALANCES = "LOAD_QUE_BALANCES";
+export function loadQueBalances() {
+  return async (dispatch: Dispatch<Action>, getState) => {
+    const api: QuestionApi = getState().web3.api;
+    dispatch({
+      type: LOAD_QUE_BALANCES,
+      payload: {
+        authorization: await api.getQueAuthorization(),
+        balance: await api.getQueBalance()
+      }
+    });
+  };
+}
+
 export function watchForChainEvents() {
   return async (dispatch: Dispatch<Action>, getState) => {
     const api: QuestionApi = getState().web3.api;
