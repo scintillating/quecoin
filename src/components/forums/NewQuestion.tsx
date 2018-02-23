@@ -12,6 +12,7 @@ class NewQuestion extends Component<
 > {
   constructor(props: NewQuestionDispatchProps) {
     super(props);
+    this.state = { questionText: "" };
     this.onTextChange = this.onTextChange.bind(this);
     this.askQuestionClicked = this.askQuestionClicked.bind(this);
   }
@@ -24,10 +25,10 @@ class NewQuestion extends Component<
   }
   render() {
     return (
-      <div>
-        <textarea onChange={this.onTextChange} />
-        <button onClick={this.askQuestionClicked}>Ask Question</button>
-      </div>
+      <form>
+        <textarea onChange={this.onTextChange} required={true} />
+        <button onSubmit={this.askQuestionClicked}>Ask Question</button>
+      </form>
     );
   }
 }
