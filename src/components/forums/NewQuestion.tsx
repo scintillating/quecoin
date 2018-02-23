@@ -27,7 +27,7 @@ class NewQuestion extends Component<
     return (
       <form>
         <textarea onChange={this.onTextChange} required={true} />
-        <button onSubmit={this.askQuestionClicked}>Ask Question</button>
+        <button onClick={this.askQuestionClicked}>Ask Question</button>
       </form>
     );
   }
