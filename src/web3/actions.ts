@@ -50,6 +50,13 @@ export function watchForChainEvents() {
         dispatch(loadQuestions());
       }
     });
+    api.watchQueAuthorization((err, res) => {
+      if (err) {
+        dispatch(setFatalError(err.message));
+      } else {
+        dispatch(loadQueBalances());
+      }
+    });
   };
 }
 

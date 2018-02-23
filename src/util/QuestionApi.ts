@@ -200,8 +200,21 @@ export default class QuestionApi {
     console.log(this.questionStore.rawWeb3Contract.QuestionAsked);
   }
 
-  public stopWatchingQuestionAsked(cb) {
-    this.questionStore.rawWeb3Contract.QuestionAsked().stopWatching(cb);
+  public watchQueAuthorization(
+    callback: (
+      error: Error,
+      result?: { asker: string; questionId: BigNumber }
+    ) => void
+  ) {
+    const event = this.quecoin.rawWeb3Contract.Approval({}, { fromBlock: 0 });
+    event.watch((e, r) => {
+      console.log("Hit Approval callback with", e, r);
+      if (e) {
+        callback(e, undefined);
+        return;
+      }
+      callback(e, r.args);
+    });
   }
 
   public async finalizeQuestion(questionId: number, answerId: number) {}
