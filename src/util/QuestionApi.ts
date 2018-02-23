@@ -179,26 +179,30 @@ export default class QuestionApi {
     }
   }
 
+  private async watchEvent(eventMethod, callback) {
+    const event = eventMethod(
+      {},
+      { fromBlock: (await tp.promisify(this.web3.eth.getBlockNumber)()) + 1 }
+    );
+    event.watch((e, r) => {
+      if (e) {
+        callback(e);
+      } else {
+        callback(e, r.args);
+      }
+    });
+  }
+
   public async watchQuestionAsked(
     callback: (
       error: Error,
       result?: { asker: string; questionId: BigNumber }
     ) => void
   ) {
-    const event = this.questionStore.rawWeb3Contract.QuestionAsked(
-      {},
-      { fromBlock: (await tp.promisify(this.web3.eth.getBlockNumber)()) + 1 }
+    await this.watchEvent(
+      this.questionStore.rawWeb3Contract.QuestionAsked,
+      callback
     );
-    console.log(event);
-    event.watch((e, r) => {
-      console.log("Hit QuestionAsked callback with", e, r);
-      if (e) {
-        callback(e, undefined);
-        return;
-      }
-      callback(e, r.args);
-    });
-    console.log(this.questionStore.rawWeb3Contract.QuestionAsked);
   }
 
   public async watchQueAuthorization(
@@ -207,18 +211,7 @@ export default class QuestionApi {
       result?: { asker: string; questionId: BigNumber }
     ) => void
   ) {
-    const event = this.quecoin.rawWeb3Contract.Approval(
-      {},
-      { fromBlock: (await tp.promisify(this.web3.eth.getBlockNumber)()) + 1 }
-    );
-    event.watch((e, r) => {
-      console.log("Hit Approval callback with", e, r);
-      if (e) {
-        callback(e, undefined);
-        return;
-      }
-      callback(e, r.args);
-    });
+    await this.watchEvent(this.quecoin.rawWeb3Contract.Approval, callback);
   }
 
   public async finalizeQuestion(questionId: number, answerId: number) {}
