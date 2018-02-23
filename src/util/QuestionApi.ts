@@ -9,6 +9,7 @@ import TxFailedError from "./TxFailedError";
 import { BigNumber } from "bignumber.js";
 import Question from "data/Question";
 import QUE from "../data/QUE";
+import * as tp from "typed-promisify";
 
 function parseQuestionArray(arr) {
   return {
@@ -178,7 +179,7 @@ export default class QuestionApi {
     }
   }
 
-  public watchQuestionAsked(
+  public async watchQuestionAsked(
     callback: (
       error: Error,
       result?: { asker: string; questionId: BigNumber }
@@ -186,7 +187,7 @@ export default class QuestionApi {
   ) {
     const event = this.questionStore.rawWeb3Contract.QuestionAsked(
       {},
-      { fromBlock: 0 }
+      { fromBlock: (await tp.promisify(this.web3.eth.getBlockNumber)()) + 1 }
     );
     console.log(event);
     event.watch((e, r) => {
@@ -200,13 +201,16 @@ export default class QuestionApi {
     console.log(this.questionStore.rawWeb3Contract.QuestionAsked);
   }
 
-  public watchQueAuthorization(
+  public async watchQueAuthorization(
     callback: (
       error: Error,
       result?: { asker: string; questionId: BigNumber }
     ) => void
   ) {
-    const event = this.quecoin.rawWeb3Contract.Approval({}, { fromBlock: 0 });
+    const event = this.quecoin.rawWeb3Contract.Approval(
+      {},
+      { fromBlock: (await tp.promisify(this.web3.eth.getBlockNumber)()) + 1 }
+    );
     event.watch((e, r) => {
       console.log("Hit Approval callback with", e, r);
       if (e) {
