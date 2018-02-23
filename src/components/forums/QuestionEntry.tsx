@@ -53,11 +53,6 @@ export default class QuestionEntry extends Component<
         <p>
           <button onClick={this.onAddAnswerClicked}>Add answer</button>
         </p>
-        <p>
-          {(this.props.question.isFinalizableByUser && (
-            <>Is finalizable.</>
-          )) || <>Is not finalizable.</>}
-        </p>
       </div>
     );
   }
