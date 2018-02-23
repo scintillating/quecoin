@@ -9,6 +9,15 @@ import { BigNumber } from "bignumber.js";
 // Where the work happens.
 // Each action is async and kicks off some web3 transaction/call
 
+const withApi = (
+  callback: (dispatch: Dispatch<Action>, api: QuestionApi) => void
+) => {
+  return async (dispatch: Dispatch<Action>, getState) => {
+    const api: QuestionApi = getState().web3.api;
+    callback(dispatch, api);
+  };
+};
+
 export const INITIALIZE_CONTRACTS = "INITIALIZE_CONTRACTS";
 export function initializeContracts() {
   return async (dispatch: Dispatch<Action>, getState) => {
@@ -20,29 +29,26 @@ export function initializeContracts() {
 
 export const LOAD_QUESTIONS = "LOAD_QUESTIONS";
 export function loadQuestions() {
-  return async (dispatch: Dispatch<Action>, getState) => {
-    const api: QuestionApi = getState().web3.api;
-    dispatch({ type: LOAD_QUESTIONS, payload: await api.getQuestions() });
-  };
+  return withApi(async (dispatch, api) =>
+    dispatch({ type: LOAD_QUESTIONS, payload: await api.getQuestions() })
+  );
 }
 
 export const LOAD_QUE_BALANCES = "LOAD_QUE_BALANCES";
 export function loadQueBalances() {
-  return async (dispatch: Dispatch<Action>, getState) => {
-    const api: QuestionApi = getState().web3.api;
+  return withApi(async (dispatch, api) =>
     dispatch({
       type: LOAD_QUE_BALANCES,
       payload: {
         authorization: await api.getQueAuthorization(),
         balance: await api.getQueBalance()
       }
-    });
-  };
+    })
+  );
 }
 
 export function watchForChainEvents() {
-  return async (dispatch: Dispatch<Action>, getState) => {
-    const api: QuestionApi = getState().web3.api;
+  return withApi(async (dispatch, api) => {
     api.watchQuestionAsked((err, res) => {
       if (err) {
         dispatch(setFatalError(err.message));
@@ -57,26 +63,23 @@ export function watchForChainEvents() {
         dispatch(loadQueBalances());
       }
     });
-  };
+  });
 }
 
 export function authorizeQue(amount) {
-  return async (dispatch: Dispatch<Action>, getState) => {
-    const api: QuestionApi = getState().web3.api;
+  return withApi(async (dispatch, api) => {
     await api.authorizeQue(QUE.fromAmount(new BigNumber(amount)));
-  };
+  });
 }
 
 export function answerQuestion(questionId, answer) {
-  return async (dispatch: Dispatch<Action>, getState) => {
-    const api: QuestionApi = getState().web3.api;
+  return withApi(async (dispatch, api) => {
     await api.answerQuestion(questionId, answer);
-  };
+  });
 }
 
 export function askQuestion(text) {
-  return async (dispatch: Dispatch<Action>, getState) => {
-    const api: QuestionApi = getState().web3.api;
+  return withApi(async (dispatch, api) => {
     await api.askQuestion(text, "");
-  };
+  });
 }
