@@ -3,6 +3,7 @@ import { BigNumber } from "bignumber.js";
 
 export default class Question {
   constructor(
+    public id: number,
     public asker: string,
     public created: Date,
     public question: string,

@@ -149,11 +149,23 @@ export default class QuestionApi {
     for (let i = 0; i < questionCount; i++) {
       console.log(`Getting question details for #${i}`);
       const arr = await this.questionStore.getQuestionDetails(i);
-      questions.push(parseQuestionArray(arr));
+      questions.push({
+        id: i,
+        answers: [],
+        question: arr[0],
+        desc: arr[1],
+        asker: arr[2],
+        created: new Date(arr[3].toNumber() * 1000),
+        votePool: arr[4],
+        questionPool: arr[5],
+        voteScore: arr[6],
+        upvotesInVotePool: arr[7],
+        downvotesInVotePool: arr[8],
+        finalized: arr[9]
+      });
       const answerCount = (await this.questionStore.getQuestionAnswerCount(
         i
       )).toNumber();
-      questions[i].answers = [];
       for (let j = 0; j < answerCount; j++) {
         const ansArr = await this.questionStore.getQuestionAnswer(i, j);
         console.log("Got answer #", j, "for question #", i, ":", ansArr);
@@ -213,5 +225,5 @@ export default class QuestionApi {
     await this.watchEvent(this.quecoin.rawWeb3Contract.Approval, callback);
   }
 
-  public async finalizeQuestion(questionId: number, answerId: number) {}
+  public async finalizeQuestion(question: Question, answerId: number) {}
 }

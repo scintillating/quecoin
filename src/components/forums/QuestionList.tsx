@@ -14,8 +14,8 @@ class QuestionList extends PureComponent<{
     } else {
       return (
         <ul>
-          {this.props.questions.map((question, index) => (
-            <li key={index}>
+          {this.props.questions.map(question => (
+            <li key={question.id}>
               <QuestionEntry
                 question={question}
                 onAddAnswer={this.props.onAddAnswer}
