@@ -14,6 +14,7 @@ export default class Question {
     public questionPool: BigNumber,
     public upvotesInVotePool: BigNumber,
     public downvotesInVotePool: BigNumber,
-    public finalized: boolean
+    public finalized: boolean,
+    public isFinalizableByUser: boolean
   ) {}
 }

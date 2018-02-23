@@ -50,11 +50,12 @@ contract QuestionStore is Ownable, Pausable {
     mapping (uint => address[]) private questionDownvoters;
 
     // Maybe wrong?
-    mapping (uint => uint) private questionScore;
+    mapping (uint => uint) private questionScores;
+    // Sorted list of question ids that are Top Ten
+    // From low -> high
+    uint[10] private topTenQuestions;
 
     Question[] private questions;
-
-    uint[10] private topTenScores;
 
     Quecoin private quecoin;
 
@@ -78,7 +79,7 @@ contract QuestionStore is Ownable, Pausable {
     }
 
     // By chriseth
-    function quickSort(uint[] storage arr, uint left, uint right) internal {
+    function quickSort(uint[10] memory arr, uint left, uint right) private {
         uint i = left;
         uint j = right;
         uint pivot = arr[left + (right - left) / 2];
@@ -97,12 +98,13 @@ contract QuestionStore is Ownable, Pausable {
             quickSort(arr, i, right);
     }
 
-    function sortTopTen() external whenNotPaused {
-        uint[10] scores;
+    function sortTopTen() private {
+        uint[10] memory scores;
 
-        for (uint x = 0; x < 10; x++) {
-            uint score = questiontopTenScores[x];
-            scores[score].push;
+        // Convert array of question ids to array of scores
+        for (uint8 x = 0; x < 10; x++) {
+            uint score = questions[topTenQuestions[x]].votePool;
+            scores[x] = score;
         }
 
         if (scores.length == 0) {
@@ -111,28 +113,35 @@ contract QuestionStore is Ownable, Pausable {
             quickSort(scores, 0, scores.length - 1);
         }
 
+        for (x = 0; x < 10; x++) {
+            topTenQuestions[x] = questionScores[scores[x]];
+        }
+
     }
 
     // WIP Question Sort
-    function hotQuestion(uint _questionId, uint _oldScore, uint _newScore) external whenNotPaused {
-        uint oldScoreId = questionScore[_oldScore];
+    function recalculateTopScores(uint _questionId, uint _oldScore, uint _newScore) private {
+        uint oldScoreId = questionScores[_oldScore];
         if (oldScoreId == _questionId) {
-            questionScore[_oldScore] = 0;
-            questionScore[_newScore] = _questionId;
-            sortTopTen();
+            questionScores[_oldScore] = 0; // zero out old score of this question
+        }
+        if (questionScores[_newScore] != 0) {
+            questionScores[_newScore] = _questionId;
+            // no need to sort b/c array should already be in correct sort from last time this index was inserted
         } else {
-            topTenScores[_questionId].push;
-            questionScore[_newScore] = _questionId;
-            sortTopTen();
+            uint lowestTopTenScore = questions[topTenQuestions[0]].votePool;
+            if (_newScore >= lowestTopTenScore) {
+                topTenQuestions[0] = _newScore;
+                questionScores[_newScore] = _questionId;
+                sortTopTen();
+            }
         }
     }
 
     // Called by asker
     function acceptAnswerAndFinalize(uint _questionId, uint _answerId) external whenNotPaused {
         Question storage q = questions[_questionId];
-        require(q.asker == msg.sender); // Only asker can finalize question
         require(_isQuestionFinalizable(q));
-        require(q.finalized == false);
         require(q.voteScore >= 0); // Only for good questions
 
         // Quecoins sent to the final answerer
@@ -163,7 +172,6 @@ contract QuestionStore is Ownable, Pausable {
     function flagAndFinalize(uint _questionId) external whenNotPaused {
         Question storage q = questions[_questionId];
         require(_isQuestionFinalizable(q));
-        require(q.finalized == false);
         require(q.voteScore < 0);
 
         // Question pool voided
@@ -187,6 +195,7 @@ contract QuestionStore is Ownable, Pausable {
         require(_vote != 0); // No empty votes please
         Question storage q = questions[_questionId];
         uint queCost = uint(_vote > 0 ? _vote : -_vote);
+        uint oldVotePool = q.votePool;
         _requireVotePoolPayment(q, queCost);
         userToQuestionVote[msg.sender][_questionId] += _vote;
         if (_vote > 0) {
@@ -197,6 +206,7 @@ contract QuestionStore is Ownable, Pausable {
             q.downvotesInVotePool += queCost;
         }
         q.voteScore += _vote;
+        recalculateTopScores(_questionId, oldVotePool, q.votePool);
         Voted(msg.sender, _questionId);
     }
 
@@ -279,6 +289,11 @@ contract QuestionStore is Ownable, Pausable {
 
     function _isQuestionFinalizable(Question _question) private view returns (bool) {
         // Only allow finalize seven days after
-        return _question.created <= now - QUESTION_ANSWERING_PERIOD;
+        if (_question.voteScore >= 0) {
+            return _question.finalized == false && _question.created <= now - QUESTION_ANSWERING_PERIOD && _question.asker == msg.sender;
+        } else {
+            // Finalizable by anyone
+            return _question.finalized == false && _question.created <= now - QUESTION_ANSWERING_PERIOD;
+        }
     }
 }

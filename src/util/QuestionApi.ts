@@ -159,7 +159,10 @@ export default class QuestionApi {
         voteScore: arr[6],
         upvotesInVotePool: arr[7],
         downvotesInVotePool: arr[8],
-        finalized: arr[9]
+        finalized: arr[9],
+        isFinalizableByUser:
+          (await this.questionStore.getQuestionFinalizable(i)) &&
+          arr[2] === this.web3.eth.accounts[0]
       });
       const answerCount = (await this.questionStore.getQuestionAnswerCount(
         i
@@ -235,7 +238,7 @@ export default class QuestionApi {
   }
 
   public async finalizeQuestion(question: Question, answerId: number) {
-    if (!await this.questionStore.getQuestionFinalizable(question.id)) {
+    if (!question.isFinalizableByUser) {
       throw new Error("Question is not yet finalizable");
     }
     const txHash = await this.questionStore
