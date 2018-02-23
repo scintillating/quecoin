@@ -49,7 +49,12 @@ contract QuestionStore is Ownable, Pausable {
     mapping (uint => address[]) private questionUpvoters;
     mapping (uint => address[]) private questionDownvoters;
 
+    // Maybe wrong?
+    mapping (uint => uint) private questionScore;
+
     Question[] private questions;
+
+    uint[10] private topTenScores;
 
     Quecoin private quecoin;
 
@@ -70,6 +75,56 @@ contract QuestionStore is Ownable, Pausable {
         _requireQuestionPoolPayment(questions[_questionId], _queAmount(5));
         uint id = answers[_questionId].push(Answer(_answer, msg.sender)) - 1;
         QuestionAnswered(questions[_questionId].asker, msg.sender, _questionId, id);
+    }
+
+    // By chriseth
+    function quickSort(uint[] storage arr, uint left, uint right) internal {
+        uint i = left;
+        uint j = right;
+        uint pivot = arr[left + (right - left) / 2];
+        while (i <= j) {
+            while (arr[i] < pivot) {i++;}
+            while (pivot < arr[j]) {j--;}
+            if (i <= j) {
+                (arr[i], arr[j]) = (arr[j], arr[i]);
+                i++;
+                j--;
+            }
+        }
+        if (left < j)
+            quickSort(arr, left, j);
+        if (i < right)
+            quickSort(arr, i, right);
+    }
+
+    function sortTopTen() external whenNotPaused {
+        uint[10] scores;
+
+        for (uint x = 0; x < 10; x++) {
+            uint score = questiontopTenScores[x];
+            scores[score].push;
+        }
+
+        if (scores.length == 0) {
+            return;
+        } else {
+            quickSort(scores, 0, scores.length - 1);
+        }
+
+    }
+
+    // WIP Question Sort
+    function hotQuestion(uint _questionId, uint _oldScore, uint _newScore) external whenNotPaused {
+        uint oldScoreId = questionScore[_oldScore];
+        if (oldScoreId == _questionId) {
+            questionScore[_oldScore] = 0;
+            questionScore[_newScore] = _questionId;
+            sortTopTen();
+        } else {
+            topTenScores[_questionId].push;
+            questionScore[_newScore] = _questionId;
+            sortTopTen();
+        }
     }
 
     // Called by asker
