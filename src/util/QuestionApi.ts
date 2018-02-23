@@ -183,6 +183,14 @@ export default class QuestionApi {
     await this.waitForTransaction(txHash);
   }
 
+  public async vote(questionId: number, amount: QUE) {
+    const txHash = await this.questionStore
+      .voteTx(questionId, amount.rawAmount)
+      .send({ from: this.web3.eth.accounts[0] });
+    console.log("waiting for transaction to be mined");
+    await this.waitForTransaction(txHash);
+  }
+
   private async watchEvent(eventMethod, callback) {
     const event = eventMethod({}, {});
     event.watch((e, r) => {
@@ -215,6 +223,15 @@ export default class QuestionApi {
     ) => void
   ) {
     await this.watchEvent(this.quecoin.rawWeb3Contract.Approval, callback);
+  }
+
+  public async watchVote(
+    callback: (
+      error: Error,
+      result?: { voter: string; questionId: BigNumber }
+    ) => void
+  ) {
+    await this.watchEvent(this.questionStore.rawWeb3Contract.Voted, callback);
   }
 
   public async finalizeQuestion(question: Question, answerId: number) {

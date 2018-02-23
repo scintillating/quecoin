@@ -1,8 +1,11 @@
 import React, { ChangeEvent, Component } from "react";
 import Question from "../../data/Question";
+import QUE from "../../data/QUE";
 
 interface Props {
   question: Question;
+  onUpvote: (amount) => void;
+  onDownvote: (amount) => void;
   onAddAnswer: (text: string) => void;
 }
 
@@ -26,6 +29,14 @@ export default class QuestionEntry extends Component<
     return (
       <div>
         <h2>{this.props.question.question}</h2>
+        <p>
+          <button onClick={() => this.props.onUpvote(QUE.fromAmount(1))}>
+            Upvote
+          </button>
+          <button onClick={() => this.props.onDownvote(QUE.fromAmount(1))}>
+            Downvote
+          </button>
+        </p>
         <p>
           <small>
             <em>
