@@ -20,12 +20,11 @@ class QuestionList extends PureComponent<{
         <div>
           {this.props.questions.map(question => (
             <QuestionEntry
+              key={question.id}
               question={question}
               onAddAnswer={text => this.props.onAddAnswer(question.id, text)}
               onUpvote={amount => this.props.onUpvote(question.id, amount)}
-              onDownvote={amount =>
-                this.props.onDownvote(question.id, amount)
-              }
+              onDownvote={amount => this.props.onDownvote(question.id, amount)}
               onFinalize={answerId =>
                 this.props.onFinalize(question.id, answerId)
               }
