@@ -27,7 +27,6 @@ export default class QuestionEntry extends Component<
     this.props.onAddAnswer(this.state.answerText);
   }
 
-
   render() {
     return (
       // <button onClick={() => this.props.onUpvote(QUE.fromAmount(1))}>
@@ -53,7 +52,7 @@ export default class QuestionEntry extends Component<
           <p>{this.props.question.question}</p>
         </div>
         <div className="col-3">
-          <p>{this.props.question.created.toString().substring(4,24)}</p>
+          <p>{this.props.question.created.toString().substring(4, 24)}</p>
         </div>
         <div className="col-3 wrapWord">
           <p>{this.props.question.asker}</p>

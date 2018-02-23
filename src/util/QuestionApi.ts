@@ -155,11 +155,11 @@ export default class QuestionApi {
           desc: arr[1],
           asker: arr[2],
           created: new Date(arr[3].toNumber() * 1000),
-          votePool: arr[4],
-          questionPool: arr[5],
-          voteScore: arr[6],
-          upvotesInVotePool: arr[7],
-          downvotesInVotePool: arr[8],
+          votePool: QUE.fromRawAmount(arr[4]),
+          questionPool: QUE.fromRawAmount(arr[5]),
+          voteScore: QUE.fromRawAmount(arr[6]),
+          upvotesInVotePool: QUE.fromRawAmount(arr[7]),
+          downvotesInVotePool: QUE.fromRawAmount(arr[8]),
           finalized: arr[9],
           isFinalizableByUser:
             (await this.questionStore.getQuestionFinalizable(i)) &&
