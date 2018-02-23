@@ -25,7 +25,7 @@ const reducer = (state = initialState, action) => {
         balance: action.payload.balance
       });
     default:
-      return initialState;
+      return state;
   }
 };
 
