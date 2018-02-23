@@ -17,8 +17,7 @@ class QuestionList extends PureComponent<{
       return <div />;
     } else {
       return (
-<<<<<<< HEAD
-        <ul>
+        <div>
           {this.props.questions.map(question => (
             <li key={question.id}>
               <QuestionEntry
@@ -33,18 +32,6 @@ class QuestionList extends PureComponent<{
                 }
               />
             </li>
-=======
-        <div className="container">
-          {this.props.questions.map((question, index) => (
-            <QuestionEntry
-              question={question}
-              onAddAnswer={text => this.props.onAddAnswer(question.id, text)}
-              onUpvote={amount => this.props.onUpvote(question.id, amount)}
-              onDownvote={amount =>
-                this.props.onDownvote(question.id, amount)
-              }
-            />
->>>>>>> merge conflicts
           ))}
         </div>
       );

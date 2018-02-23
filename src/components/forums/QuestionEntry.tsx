@@ -30,47 +30,6 @@ export default class QuestionEntry extends Component<
 
   render() {
     return (
-<<<<<<< HEAD
-      <div>
-        <h2>{this.props.question.question}</h2>
-        <p>
-          <button onClick={() => this.props.onUpvote(QUE.fromAmount(1))}>
-            Upvote
-          </button>
-          <button onClick={() => this.props.onDownvote(QUE.fromAmount(1))}>
-            Downvote
-          </button>
-        </p>
-        <p>
-          <small>
-            <em>
-              Created {this.props.question.created.toString()} | By{" "}
-              {this.props.question.asker} |{" "}
-              {this.props.question.voteScore.toNumber()} votes
-            </em>
-          </small>
-        </p>
-        <ul>
-          {this.props.question.answers.map((a, j) => (
-            <li key={j}>
-              {a.answer} by {a.author}{" "}
-              {(this.props.question.isFinalizableByUser && (
-                <>
-                  Is finalizable.{" "}
-                  <button onClick={() => this.props.onFinalize(j)} />
-                </>
-              )) || <>Is not finalizable.</>}
-            </li>
-          ))}
-        </ul>
-        <p>
-          <textarea onChange={this.handleTextChange} />
-        </p>
-        <p>
-          <button onClick={this.onAddAnswerClicked}>Add answer</button>
-        </p>
-        <p />
-=======
       // <button onClick={() => this.props.onUpvote(QUE.fromAmount(1))}>
       //   Upvote
       // </button>
@@ -88,7 +47,7 @@ export default class QuestionEntry extends Component<
       // {a.answer} by {a.author}{" "}
       <div className="row">
         <div className="col-1">
-          <p>{this.props.question.votePool}</p>
+          <p>{this.props.question.votePool.toString()}</p>
         </div>
         <div className="col-5">
           <p>{this.props.question.question}</p>
@@ -99,7 +58,6 @@ export default class QuestionEntry extends Component<
         <div className="col-3 wrapWord">
           <p>{this.props.question.asker}</p>
         </div>
->>>>>>> merge conflicts
       </div>
     );
   }
