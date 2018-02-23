@@ -26,8 +26,11 @@ export default class QuestionEntry extends Component<
   private onAddAnswerClicked() {
     this.props.onAddAnswer(this.state.answerText);
   }
+
+
   render() {
     return (
+<<<<<<< HEAD
       <div>
         <h2>{this.props.question.question}</h2>
         <p>
@@ -67,6 +70,36 @@ export default class QuestionEntry extends Component<
           <button onClick={this.onAddAnswerClicked}>Add answer</button>
         </p>
         <p />
+=======
+      // <button onClick={() => this.props.onUpvote(QUE.fromAmount(1))}>
+      //   Upvote
+      // </button>
+      // <button onClick={() => this.props.onDownvote(QUE.fromAmount(1))}>
+      //   Downvote
+      // </button>
+      // //<p>
+      //  {(this.props.question.isFinalizableByUser && (
+      // {(this.props.question.isFinalizableByUser && (
+      //   <>
+      //     Is finalizable.{" "}
+      //     <button onClick={() => this.props.onFinalize(j)} />
+      //   </>
+      // )) || <>Is not finalizable.</>}
+      // {a.answer} by {a.author}{" "}
+      <div className="row">
+        <div className="col-1">
+          <p>{this.props.question.votePool}</p>
+        </div>
+        <div className="col-5">
+          <p>{this.props.question.question}</p>
+        </div>
+        <div className="col-3">
+          <p>{this.props.question.created.toString().substring(4,24)}</p>
+        </div>
+        <div className="col-3 wrapWord">
+          <p>{this.props.question.asker}</p>
+        </div>
+>>>>>>> merge conflicts
       </div>
     );
   }
