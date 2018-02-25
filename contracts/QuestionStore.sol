@@ -17,6 +17,10 @@ contract QuestionStore is Ownable, Pausable {
     using SafeMath for uint256;
 
     uint private constant QUESTION_ANSWERING_PERIOD = 7 days;
+    uint private constant TOP_QUESTIONS_COUNT = 10;
+    // Cost in terms of QUE
+    uint private constant COST_ASK_QUESTION = 10;
+    uint private constant COST_ANSWER_QUESTION = 5;
 
     struct Question {
         string question;
@@ -53,7 +57,7 @@ contract QuestionStore is Ownable, Pausable {
     mapping (uint => uint) private questionScores;
     // Sorted list of question ids that are Top Ten
     // From low -> high
-    uint[10] private topTenQuestions;
+    uint[TOP_QUESTIONS_COUNT] private topQuestions;
 
     Question[] private questions;
 
@@ -67,75 +71,15 @@ contract QuestionStore is Ownable, Pausable {
     function askQuestion(string _question, string _description) external whenNotPaused {
         // Initialize question with 0 vote and question pools
         Question memory newQuestion = Question(_question, _description, msg.sender, now, 0, 0, 0, 0, 0, false);
-        _requireQuestionPoolPayment(newQuestion, _queAmount(10));
+        _requireQuestionPoolPayment(newQuestion, _queAmount(COST_ASK_QUESTION));
         uint id = questions.push(newQuestion) - 1;
         QuestionAsked(msg.sender, id);
     }
 
     function answerQuestion(uint _questionId, string _answer) external whenNotPaused {
-        _requireQuestionPoolPayment(questions[_questionId], _queAmount(5));
+        _requireQuestionPoolPayment(questions[_questionId], _queAmount(COST_ANSWER_QUESTION));
         uint id = answers[_questionId].push(Answer(_answer, msg.sender)) - 1;
         QuestionAnswered(questions[_questionId].asker, msg.sender, _questionId, id);
-    }
-
-    // By chriseth
-    function quickSort(uint[10] memory arr, uint left, uint right) private {
-        uint i = left;
-        uint j = right;
-        uint pivot = arr[left + (right - left) / 2];
-        while (i <= j) {
-            while (arr[i] < pivot) {i++;}
-            while (pivot < arr[j]) {j--;}
-            if (i <= j) {
-                (arr[i], arr[j]) = (arr[j], arr[i]);
-                i++;
-                j--;
-            }
-        }
-        if (left < j)
-            quickSort(arr, left, j);
-        if (i < right)
-            quickSort(arr, i, right);
-    }
-
-    function sortTopTen() private {
-        uint[10] memory scores;
-
-        // Convert array of question ids to array of scores
-        for (uint8 x = 0; x < 10; x++) {
-            uint score = questions[topTenQuestions[x]].votePool;
-            scores[x] = score;
-        }
-
-        if (scores.length == 0) {
-            return;
-        } else {
-            quickSort(scores, 0, scores.length - 1);
-        }
-
-        for (x = 0; x < 10; x++) {
-            topTenQuestions[x] = questionScores[scores[x]];
-        }
-
-    }
-
-    // WIP Question Sort
-    function recalculateTopScores(uint _questionId, uint _oldScore, uint _newScore) private {
-        uint oldScoreId = questionScores[_oldScore];
-        if (oldScoreId == _questionId) {
-            questionScores[_oldScore] = 0; // zero out old score of this question
-        }
-        if (questionScores[_newScore] != 0) {
-            questionScores[_newScore] = _questionId;
-            // no need to sort b/c array should already be in correct sort from last time this index was inserted
-        } else {
-            uint lowestTopTenScore = questions[topTenQuestions[0]].votePool;
-            if (_newScore >= lowestTopTenScore) {
-                topTenQuestions[0] = _newScore;
-                questionScores[_newScore] = _questionId;
-                sortTopTen();
-            }
-        }
     }
 
     // Called by asker
@@ -267,6 +211,64 @@ contract QuestionStore is Ownable, Pausable {
 
     function changeQuecoinAddress(address _newAddress) public onlyOwner {
         quecoin = Quecoin(_newAddress);
+    }
+
+    function _recalculateTopQuestionsOnVote(uint _questionId, uint _oldScore, uint _newScore) private {
+        uint oldScoreId = questionScores[_oldScore];
+        if (oldScoreId == _questionId) {
+            questionScores[_oldScore] = 0; // zero out old score of this question
+        }
+        if (questionScores[_newScore] != 0) {
+            questionScores[_newScore] = _questionId;
+            // no need to sort b/c array should already be in correct sort from last time this index was inserted
+        } else {
+            uint lowestTopTenScore = questions[topQuestions[0]].votePool;
+            if (_newScore >= lowestTopTenScore) {
+                topQuestions[0] = _newScore;
+                questionScores[_newScore] = _questionId;
+                _sortTopQuestions();
+            }
+        }
+    }
+
+    // By chriseth
+    function _quickSort(uint[TOP_QUESTIONS_COUNT] memory arr, uint left, uint right) private {
+        uint i = left;
+        uint j = right;
+        uint pivot = arr[left + (right - left) / 2];
+        while (i <= j) {
+            while (arr[i] < pivot) {i++;}
+            while (pivot < arr[j]) {j--;}
+            if (i <= j) {
+                (arr[i], arr[j]) = (arr[j], arr[i]);
+                i++;
+                j--;
+            }
+        }
+        if (left < j)
+            _quickSort(arr, left, j);
+        if (i < right)
+            _quickSort(arr, i, right);
+    }
+
+    function _sortTopQuestions() private {
+        uint[TOP_QUESTIONS_COUNT] memory scores;
+
+        // Convert array of question ids to array of scores
+        for (uint8 x = 0; x < TOP_QUESTIONS_COUNT; x++) {
+            uint score = questions[topQuestions[x]].votePool;
+            scores[x] = score;
+        }
+
+        if (scores.length == 0) {
+            return;
+        } else {
+            _quickSort(scores, 0, scores.length - 1);
+        }
+
+        for (x = 0; x < TOP_QUESTIONS_COUNT; x++) {
+            topQuestions[x] = questionScores[scores[x]];
+        }
     }
 
     function _requireQuestionPoolPayment(Question _question, uint _amount) private {
