@@ -49,14 +49,17 @@ contract QuestionStore is Ownable, Pausable {
 
     // User address -> questionId -> vote amount (negative = downvote)
     mapping (address => mapping(uint => int)) private userToQuestionVote;
+    // NOTE: The reason why these arraus aren't just in the Question struct is because
+    // copying a struct with an array inside into a storage array isn't yet supported
+    // (see https://ethereum.stackexchange.com/questions/12611/)
     mapping (uint => Answer[]) private answers;
     mapping (uint => address[]) private questionUpvoters;
     mapping (uint => address[]) private questionDownvoters;
 
-    // Maybe wrong?
-    mapping (uint => uint) private questionScores;
+    // votePool -> questionId
+    mapping (uint => uint) private questionsByVotePool;
     // Sorted list of question ids that are Top Ten
-    // From low -> high
+    // From low -> high votePool
     uint[TOP_QUESTIONS_COUNT] private topQuestions;
 
     Question[] private questions;
@@ -98,9 +101,10 @@ contract QuestionStore is Ownable, Pausable {
         uint coinsForAsker = q.questionPool.div(4);
         require(quecoin.transferFrom(this, q.asker, coinsForAsker));
 
-        // Upvoters get their money back and downvoters' money proportional
+        // Upvoters get their money and downvoters' money back proportional to
         // the amount they put in
-        // TODO: Unbounded for loops are bad in solidity
+        // TODO: Unbounded for loops are bad in solidity - perhaps switch to a
+        // pull method where upvoters/downvoters manually withdraw their QUE
         for (uint i = 0; i < questionUpvoters[_questionId].length; i++) {
             address upvoter = questionUpvoters[_questionId][i];
             uint upvoteAmount = uint(userToQuestionVote[upvoter][_questionId]);
@@ -112,7 +116,8 @@ contract QuestionStore is Ownable, Pausable {
         AcceptedAndFinalized(q.asker, answerer, _questionId, _answerId);
     }
 
-    // Callable by anyone
+    // Callable by anyone, because this question with negative score honestly
+    // should not exist.
     function flagAndFinalize(uint _questionId) external whenNotPaused {
         Question storage q = questions[_questionId];
         require(_isQuestionFinalizable(q));
@@ -184,7 +189,6 @@ contract QuestionStore is Ownable, Pausable {
         upvotesInVotePool = q.upvotesInVotePool;
         downvotesInVotePool = q.downvotesInVotePool;
         finalized = q.finalized;
-        // return (question, desc, asker, created, votePool, questionPool, upvotesInVotePool, downvotesInVotePool, finalized);
     }
 
     function getQuestionCount() external view returns (uint) {
@@ -213,25 +217,27 @@ contract QuestionStore is Ownable, Pausable {
         quecoin = Quecoin(_newAddress);
     }
 
+    // Called on vote() to recalculate the list of top ten questions by sorting by score
     function _recalculateTopQuestionsOnVote(uint _questionId, uint _oldScore, uint _newScore) private {
-        uint oldScoreId = questionScores[_oldScore];
+        uint oldScoreId = questionsByVotePool[_oldScore];
         if (oldScoreId == _questionId) {
-            questionScores[_oldScore] = 0; // zero out old score of this question
+            questionsByVotePool[_oldScore] = 0; // zero out old score of this question
         }
-        if (questionScores[_newScore] != 0) {
-            questionScores[_newScore] = _questionId;
+        if (questionsByVotePool[_newScore] != 0) {
+            questionsByVotePool[_newScore] = _questionId;
             // no need to sort b/c array should already be in correct sort from last time this index was inserted
         } else {
-            uint lowestTopTenScore = questions[topQuestions[0]].votePool;
-            if (_newScore >= lowestTopTenScore) {
+            uint lowestTopScore = questions[topQuestions[0]].votePool;
+            if (_newScore >= lowestTopScore) {
                 topQuestions[0] = _newScore;
-                questionScores[_newScore] = _questionId;
+                questionsByVotePool[_newScore] = _questionId;
                 _sortTopQuestions();
             }
         }
     }
 
     // By chriseth
+    // Simple quick sort of uint array
     function _quickSort(uint[TOP_QUESTIONS_COUNT] memory arr, uint left, uint right) private {
         uint i = left;
         uint j = right;
@@ -267,7 +273,7 @@ contract QuestionStore is Ownable, Pausable {
         }
 
         for (x = 0; x < TOP_QUESTIONS_COUNT; x++) {
-            topQuestions[x] = questionScores[scores[x]];
+            topQuestions[x] = questionsByVotePool[scores[x]];
         }
     }
 
@@ -292,9 +298,10 @@ contract QuestionStore is Ownable, Pausable {
     function _isQuestionFinalizable(Question _question) private view returns (bool) {
         // Only allow finalize seven days after
         if (_question.voteScore >= 0) {
+            // If it's a good question, only the asker can finalize it
             return _question.finalized == false && _question.created <= now - QUESTION_ANSWERING_PERIOD && _question.asker == msg.sender;
         } else {
-            // Finalizable by anyone
+            // Bad (negative score) questions are finalizable by anyone
             return _question.finalized == false && _question.created <= now - QUESTION_ANSWERING_PERIOD;
         }
     }
